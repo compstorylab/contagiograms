@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from datetime import datetime
 
-from contagiograms import cli, utils, consts
+import cli, utils, consts
 
 
 def parse_args(args):

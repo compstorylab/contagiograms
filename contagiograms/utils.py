@@ -22,8 +22,8 @@ from bidi import algorithm as bidialg
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
-from contagiograms import consts, regexr
-from contagiograms.query import Query
+import consts, regexr
+from query import Query
 
 
 import warnings
@@ -51,7 +51,7 @@ def plot(
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
 
-    if type(grams) == str or type(grams) == Path:
+    if type(grams) != dict:
         with open(grams, 'r') as data:
             grams = ujson.load(data)
 
@@ -401,7 +401,7 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
 
             if c == 0:
                 langax.text(
-                    -0.22, 0.5, r"$\alpha = \dfrac{RT}{RT(\ell)}$", ha='center',
+                    -0.22, 0.5, r"$\alpha = \dfrac{p_{\tau}^{(\mathsf{RT})}}{p_{\ell}^{(\mathsf{RT})}}$", ha='center',
                     verticalalignment='center', transform=langax.transAxes
                 )
 

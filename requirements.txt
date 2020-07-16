@@ -5,3 +5,4 @@ pandas
 pymongo
 python-bidi
 ujson
+pypdf2

@@ -4,7 +4,7 @@
     ],
     "test4": [
         ["Copa Mundial", "es"], ["Pasqua", "it"],
-        ["@NASA", "en"], ["klimatet", "sv"]
+        ["#TGIF", "en"], ["klimatet", "sv"]
     ],
     "test6": [
         ["kevät", "fi"], ["Carnaval", "pt"],
@@ -12,8 +12,8 @@
         ["virus", "fr"], ["Brexit", "de"]
     ],
     "test9": [
-        ["❤", "en"], ["Resurrección", "es"], ["Coupe", "fr"],
-        ["eleição", "pt"], ["ثورة", "ar"], ["@bts_twt", "ko"],
+        ["Black Lives Matter", "en"], ["Resurrección", "es"], ["eleição", "pt"],
+        ["ثورة", "ar"], ["@bts_twt", "ko"], ["Coupe", "fr"],
         ["Flüchtling", "de"], ["San Valentino", "it"], ["карантин", "ru"]
     ],
     "test12": [

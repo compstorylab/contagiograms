@@ -26,9 +26,11 @@ This will create a new conda environment (`contagiograms`) with all required dep
 
 
 ## Usage
+
 ### Python module
 ```python
-from contagiograms import utils as contagiograms
+from datetime import datetime
+from contagiograms import utils as cg
 
 ngrams = {
     "test2": [
@@ -40,11 +42,18 @@ ngrams = {
     ]
 }
 
-contagiograms.plot(ngrams, 'tests/')
-
+cg.plot(ngrams, 'tests/')
 
 # or using a JSON file 
-contagiograms.plot('tests/contagiograms.json', 'tests')
+cg.plot(
+    'tests/test.json', 
+    savepath='tests/',
+    case_sensitive=True,
+    start_date=datetime(2010, 1, 1)
+)
+
+# combine PDFs into a single flipbook
+cg.flipbook(savepath='.', datapath='tests/')
 ```
 
 ### Command line interface 

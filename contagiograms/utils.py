@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
-
+from PyPDF2 import PdfFileReader, PdfFileMerger
 
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -28,6 +28,25 @@ from query import Query
 
 import warnings
 warnings.simplefilter("ignore")
+
+
+def flipbook(savepath, datapath):
+    """ Combine PDFs into a flipBook
+    Args:
+        savepath: path to save generated pdf
+        files: a list of files to combine
+    """
+    pdf = PdfFileMerger()
+
+    for f in datapath.rglob('*.pdf'):
+        print(f)
+        pdf.append(PdfFileReader(str(f), 'rb'))
+
+    pdf.write(f"{savepath}/{datetime.date(datetime.now())}_flipbook_{datapath.stem}.pdf")
+    pdf.close()
+
+    print(f"Saved: {savepath}/{datetime.date(datetime.now())}_flipbook_{datapath.stem}.pdf")
+
 
 
 def plot(

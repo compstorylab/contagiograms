@@ -8,3 +8,4 @@ dependencies:
   - pymongo
   - python-bidi
   - ujson
+  - pypdf2

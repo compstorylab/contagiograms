@@ -15,6 +15,10 @@ import cli, utils, consts
 def parse_args(args):
     parser = cli.parser()
 
+    # optional subparsers
+    subparsers = parser.add_subparsers(help='Arguments for specific action.', dest='dtype')
+    subparsers.required = False
+
     parser.add_argument(
         '-o', '--output',
         help='path to save figure',
@@ -25,6 +29,12 @@ def parse_args(args):
         '-i', '--input',
         help='path to an input JSON file',
         default=None,
+    )
+
+    parser.add_argument(
+        '--flipbook',
+        help='a flag to combine contagiograms PDFs into a single flipbook',
+        action='store_true'
     )
 
     return parser.parse_args(args)
@@ -46,6 +56,12 @@ def main(args=None):
         case_sensitive=True,
         start_date=datetime(2010, 1, 1)
     )
+
+    if args.flipbook:
+        utils.flipbook(
+            savepath=Path(args.output),
+            datapath=Path(args.output),
+        )
 
     print(f'Total time elapsed: {time.time() - timeit:.2f} sec.')
 

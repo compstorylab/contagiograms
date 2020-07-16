@@ -1,5 +1,5 @@
-.. image:: tests/2020-07-16_contagiograms_test4.png
-   :width: 80 %
+.. figure:: tests/2020-07-16_contagiograms_test4.png
+   :width: 75 %
    :align: center
 
 

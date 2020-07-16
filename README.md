@@ -109,7 +109,8 @@ as shown below [test.json](tests/test.json)
 }
 ```
 
+You can run it from your terminal 
 ```shell
-python contagiograms/contagiograms.py -i tests/contagiograms.json -o tests/
+python contagiograms/contagiograms.py --flipbook -i tests/test.json -o tests/
 ```
 

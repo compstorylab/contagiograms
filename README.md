@@ -2,7 +2,7 @@
 
 # Contagiograms 
 As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) project,
-we present `Contagiograms`:
+we present a standalone python package for `Contagiograms`:
 An instrument to approximate the daily usage of ngrams along with their popularity on Twitter.
 
 
@@ -17,7 +17,6 @@ You can install all required dependencies by running the [setup.py](setup.py) sc
 python setup.py install 
 ```
 
-#### Anaconda evn
 Alternatively, you can use Anaconda to install our package.
 To get started, please run the following command:
 ```shell
@@ -72,7 +71,7 @@ optional arguments:
 Currently, we have five layouts for contagiograms (rows x columns): 
 (1 x 2), (2 x 2), (3 x 2), (3 x 3), (4 x 3). 
 To pass in your own ngrams you need a JSON file strucured with any of these configurations 
-as shown below [contagiograms.json](tests/contagiograms.json)
+as shown below [test.json](tests/test.json)
 ```json
 {
     "test2": [
@@ -104,3 +103,4 @@ as shown below [contagiograms.json](tests/contagiograms.json)
 ```shell
 python contagiograms/contagiograms.py -i tests/contagiograms.json -o tests/
 ```
+

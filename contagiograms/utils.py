@@ -50,7 +50,7 @@ def plot(
     """
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
-    print(grams)
+
     if type(grams) == str or type(grams) == Path:
         with open(grams, 'r') as data:
             grams = ujson.load(data)
@@ -411,7 +411,7 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
                 )
 
                 ax.text(
-                    -0.22, 0.5, "Word\nRank", ha='center',
+                    -0.22, 0.5, r"$n$-gram"+"\nrank\n"+r"$r$", ha='center',
                     verticalalignment='center', transform=ax.transAxes
                 )
 

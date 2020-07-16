@@ -1,4 +1,8 @@
 .. image:: tests/2020-07-16_contagiograms_test4.png
+   :width: 1000 px
+   :scale: 50 %
+   :align: center
+
 
 Contagiograms 
 ###############
@@ -95,10 +99,11 @@ Optional arguments:
   --t2 T2               window size for smoothing the main timeseries [days] (default: 30)
 
 
-.. note::  Currently, we have five layouts for contagiograms (rows x columns): (1 x 2), (1 x 2), (2 x 2), (3 x 2), (3 x 3), and (4 x 3).
 
-:JSON INPUT:  To pass in your own ngrams you need a JSON file strucured with any of the configurations noted above (see `test.json <tests/test.json>`_)
+Currently, we have five layouts for contagiograms (rows x columns)
+    :Configurations: (1 x 2), (1 x 2), (2 x 2), (3 x 2), (3 x 3), and (4 x 3).
 
+To pass in your own ngrams you need a JSON file strucured with any of the configurations noted above (see `test.json <tests/test.json>`_)
 
 .. code-block:: json
 

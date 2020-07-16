@@ -1,0 +1,25 @@
+{
+    "test2": [
+        ["Game of Thrones", "en"], ["The Walking Dead", "en"]
+    ],
+    "test4": [
+        ["Copa Mundial", "es"], ["Pasqua", "it"],
+        ["@NASA", "en"], ["klimatet", "sv"]
+    ],
+    "test6": [
+        ["kevät", "fi"], ["Carnaval", "pt"],
+        ["Lionel Messi", "es"], ["#TGIF", "en"],
+        ["virus", "fr"], ["Brexit", "de"]
+    ],
+    "test9": [
+        ["❤", "en"], ["Resurrección", "es"], ["Coupe", "fr"],
+        ["eleição", "pt"], ["ثورة", "ar"], ["@bts_twt", "ko"],
+        ["Flüchtling", "de"], ["San Valentino", "it"], ["карантин", "ru"]
+    ],
+    "test12": [
+        ["Avengers", "en"], ["Skyfall", "en"], ["Black Panther", "en"],
+        ["Star Wars", "en"], ["Harry Potter", "en"], ["Jurassic World", "en"],
+        ["Interstellar", "en"], ["Dark Knight", "en"], ["Inception", "en"],
+        ["Frozen", "en"], ["Furious", "en"], ["Titanic", "en"]
+    ]
+}

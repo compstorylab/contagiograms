@@ -6,7 +6,6 @@ Licensed under the MIT License;
 
 import html
 import re
-import pickle
 from collections import Counter
 
 
@@ -59,65 +58,3 @@ def ngrams(s, parser, n=1):
     else:
         ngrams = zip(*[tokens[i:] for i in range(n)])
         return Counter([" ".join(ngram) for ngram in ngrams])
-
-
-def get_emojis_parser(path):
-    """ Load a regular expression that matches emojis
-    :param path: path to a (.bin) file
-    :return: a compiled regex
-    """
-    print('Loading emoji parser...')
-    with open(path, "rb") as f:
-        return pickle.load(f)
-
-
-def get_ngrams_parser(path):
-    """ Load a regular expression that matches ngrams
-    :param path: path to a (.bin) file
-    :return: a compiled regex
-    """
-    print('Loading ngrams parser...')
-    with open(path, "rb") as f:
-        return pickle.load(f)
-
-
-def is_emoji(string, n_emoji, emoji_pattern):
-    """Return True if get_emojis() detects emoji. Also check if number of emoji exceeds threshold, and if there are
-    non-emoji characters.
-    :param string: string to check for emojis
-    :param emoji_pattern: emoji pattern
-    :param emoji_bin: compiled regex pattern
-
-    """
-    try:
-        string = string.replace(' ', '')
-        regex_res = emoji_pattern.findall(string)
-        return len(regex_res) == n_emoji and not len(emoji_pattern.sub('', string)) > 0
-    except (TypeError, AttributeError):
-        return False
-
-
-def get_emojis(text, path):
-    """ Parse out emojis from a given string
-    :param text: a string
-    :param path: path to a compiled emoji regex (emojis.bin) file
-    :return: a list of re.Match objects in the given the string
-    """
-    if type(path) == str:
-        eparser = get_ngrams_parser(path)
-    else:
-        eparser = path
-    text = remove_whitespaces(text)
-    return [m for m in re.finditer(eparser, text)]
-
-
-def get_ngrams(text, path, n=1):
-    """ Parse out ngrams from a given string
-    :param text: a string
-    :param path: path to a compiled ngrams regex (ngrams.bin) file
-    :param n: degree of ngrams to parse out
-    :return: a Counter object of ngrams in the given string
-    """
-    nparser = get_ngrams_parser(path)
-    text = remove_whitespaces(text)
-    return ngrams(text, nparser, n)

@@ -4,9 +4,12 @@ Copyright (c) 2020 The Computational Story Lab.
 Licensed under the MIT License;
 """
 
+import ujson
 import numpy as np
 import pandas as pd
+from pathlib import Path
 from datetime import datetime
+
 
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -19,16 +22,22 @@ from bidi import algorithm as bidialg
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
-import consts
-import regexr
-from query import Query
+from contagiograms import consts, regexr
+from contagiograms.query import Query
 
 
 import warnings
 warnings.simplefilter("ignore")
 
 
-def contagiograms(grams, savepath, lang_hashtbl, nparser, case_sensitive, start_date):
+def plot(
+        grams,
+        savepath,
+        lang_hashtbl=consts.supported_languages,
+        nparser=consts.ngrams_parser,
+        case_sensitive=True,
+        start_date=datetime(2010, 1, 1)
+):
     """ Plot a grid of contagiograms
 
     Args:
@@ -39,6 +48,12 @@ def contagiograms(grams, savepath, lang_hashtbl, nparser, case_sensitive, start_
         case_sensitive: a toggle for case_sensitive lookups
         start_date: starting date for the query
     """
+
+    Path(savepath).mkdir(parents=True, exist_ok=True)
+    print(grams)
+    if type(grams) == str or type(grams) == Path:
+        with open(grams, 'r') as data:
+            grams = ujson.load(data)
 
     for key, listt in grams.items():
         ngrams = []
@@ -66,37 +81,9 @@ def contagiograms(grams, savepath, lang_hashtbl, nparser, case_sensitive, start_
             f'{savepath}/{datetime.date(datetime.now())}_contagiograms_{key}',
             ngrams,
             shading=True,
-            fullpage=True
+            fullpage=True if len(ngrams) > 6 else False
         )
         print(f'Saved: {savepath}/{datetime.date(datetime.now())}_contagiograms_{key}')
-
-
-def lang_contagiograms(loi, savepath, lang_hashtbl, start_date):
-    """ Plot a grid of contagiograms
-    Args:
-        loi: a list of ISO language codes
-        savepath: path to save generated plot
-        lang_hashtbl: a list of languages and their corresponding codes in both FastText and Twitter
-        start_date: starting date for the query
-    """
-
-    languages = []
-    for i, lang in enumerate(loi[:11]):
-        print(f"Retrieving: {lang_hashtbl.get(lang)}")
-        q = Query('languages', 'languages')
-        d = q.query_languages(lang, start_time=start_date)
-
-        print(f"Highest: {int(d['count'].max())} -- {d['count'].idxmax()}")
-        print(f"Lowest: {int(d['count'].min())} -- {d['count'].idxmin()}")
-
-        d.index.name = lang_hashtbl.get(lang)
-        languages.append(d)
-
-    plot_lang_contagiograms(
-        f'{savepath}/{datetime.date(datetime.now())}_lang_contagiograms',
-        languages
-    )
-    print(f'Saved: {savepath}/{datetime.date(datetime.now())}_lang_contagiograms')
 
 
 def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
@@ -105,8 +92,8 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
     Args:
         savepath: path to save plot
         ngrams: a 2D-list of ngrams to plot
-        rolling_avg: a toggle for plotting a rolling average of the timeseries
         shading: a toggle to either shade the area between the min and max or plot individual lines
+        fullpage: a toggle to switch to 3 columns instead of 2
         saves a figure to {savepath}
     """
 
@@ -119,9 +106,10 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
         'legend.fontsize': 10,
     })
     size = 6
-    rows = (3*size)+3
+    r = len(ngrams)//3 if fullpage else len(ngrams)//2
+    rows = (r*size)+r if fullpage else (r*size)+r
     cols = 3 if fullpage else 2
-    fig = plt.figure(figsize=(11, 11)) if fullpage else plt.figure(figsize=(8, 11))
+    fig = plt.figure(figsize=(12, size+(2*r+2))) if fullpage else plt.figure(figsize=(8, size+(2*r)))
     gs = fig.add_gridspec(ncols=cols, nrows=rows)
     metric = 'rank'
     labels = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'.split(' ')
@@ -239,7 +227,7 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
             try:
                 # plot contagion fraction
                 try:
-                    idx = np.argwhere((rt - ot) > 0).flatten()
+                    idx = np.where((rt - ot) > 0)[0]
                     if len(idx) > 0:
                         for d in rt[idx].index:
                             cax.axvline(d, color=contagion_color, alpha=.25)
@@ -374,8 +362,6 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
             langax.tick_params(axis='y', which='both', length=0)
             langax.set_yticklabels(days, va="top")
 
-            i += 1
-
             cax.annotate(
                 labels[i], xy=(-.15, 1.25), color='k', weight='bold',
                 xycoords="axes fraction", fontsize=16,
@@ -438,220 +424,9 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
                     verticalalignment='center', transform=ax.transAxes, color='grey'
                 )
 
+            i += 1
+
         plt.subplots_adjust(top=0.97, right=0.97, hspace=0.5)
         plt.savefig(f'{savepath}.pdf', bbox_inches='tight', pad_inches=.25)
         plt.savefig(f'{savepath}.png', dpi=300, bbox_inches='tight', pad_inches=.25)
 
-
-def plot_lang_contagiograms(savepath, langs, rolling_avg=True):
-    """ Plot a grid of contagiograms
-    Args:
-        savepath: path to save plot
-        ngrams: a 2D-list of langs to plot
-        rolling_avg: a toggle for plotting a rolling average of the timeseries
-    """
-
-    plt.rcParams.update({
-        'font.size': 10,
-        'axes.titlesize': 16,
-        'axes.labelsize': 14,
-        'xtick.labelsize': 12,
-        'ytick.labelsize': 12,
-        'legend.fontsize': 12,
-    })
-
-    rows, cols = 16, 3
-    fig = plt.figure(figsize=(12, 14))
-    gs = fig.add_gridspec(ncols=cols, nrows=rows)
-    at_color = 'k'
-    ot_color = 'C0'
-    rt_color = 'C1'
-    labels = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'.split(' ')
-    window_size = 7
-    metric = 'count'
-    df = langs[0].dropna(how='all')
-    start_date = df.index[0]
-    end_date = df.index[-1]
-    diff = end_date - start_date
-    print(f'Last updated: {end_date}')
-
-    if diff.days < 365:
-        major_date_format = '%b'
-        minor_date_format = ''
-        major_locator = mdates.MonthLocator(range(1, int(np.ceil(diff.days/30) + 1)))
-        minor_locator = mdates.MonthLocator()
-        contagion_resolution = 'D'
-    elif diff.days < 365 * 2:
-        major_date_format = '%b\n%Y'
-        minor_date_format = '%b'
-        major_locator = mdates.YearLocator()
-        minor_locator = mdates.MonthLocator([4, 7, 10])
-        contagion_resolution = 'D'
-    elif diff.days < 365 * 4:
-        major_date_format = '%Y'
-        minor_date_format = ''
-        major_locator = mdates.YearLocator()
-        minor_locator = mdates.AutoDateLocator()
-        contagion_resolution = 'W'
-    else:
-        major_date_format = '%Y'
-        minor_date_format = ''
-        major_locator = mdates.YearLocator(2)
-        minor_locator = mdates.YearLocator()
-        contagion_resolution = 'M'
-
-    i = 0
-    for r in np.arange(0, rows, step=4):
-        for c in np.arange(cols):
-
-            ax = fig.add_subplot(gs[r + 1:r + 3, c])
-            cax = fig.add_subplot(gs[r, c])
-
-            df = langs[i]
-            df.index = pd.to_datetime(df.index)
-            df = df.dropna(how='all')
-
-            start_date = df.index[0]
-            end_date = df.index[-1]
-            ax.set_xlim(start_date, end_date)
-            cax.set_xlim(start_date, end_date)
-
-            ax.xaxis.set_major_locator(major_locator)
-            ax.xaxis.set_major_formatter(mdates.DateFormatter(major_date_format))
-            ax.xaxis.set_minor_locator(minor_locator)
-            ax.xaxis.set_minor_formatter(mdates.DateFormatter(minor_date_format))
-
-            cax.xaxis.set_major_locator(major_locator)
-            cax.xaxis.set_major_formatter(mdates.DateFormatter(major_date_format))
-            cax.xaxis.set_minor_locator(minor_locator)
-            cax.xaxis.set_minor_formatter(mdates.DateFormatter(minor_date_format))
-
-            at = df['count'].resample(contagion_resolution).mean()
-            ot = df['count_no_rt'].resample(contagion_resolution).mean()
-            rt = at - ot
-
-            df['count'] = df['count'].apply(np.log10).fillna(0)
-            df['count_no_rt'] = df['count_no_rt'].apply(np.log10).fillna(0)
-
-            df['freq'] = df['freq'].apply(np.log10).fillna(0)
-            df['freq_no_rt'] = df['freq_no_rt'].apply(np.log10).fillna(0)
-
-            df['rank'] = df['rank'].apply(np.log10).fillna(6)
-            df['rank_no_rt'] = df['rank_no_rt'].apply(np.log10).fillna(6)
-
-            cax.annotate(
-                labels[i], xy=(-.16, 1.2), color='k', weight='bold',
-                xycoords="axes fraction", fontsize=16,
-            )
-            cax.set_title(df.index.name)
-
-            try:
-                # plot contagion fraction
-                try:
-                    idx = np.argwhere((rt - ot) > 0).flatten()
-                    if len(idx) > 0:
-                        for d in rt[idx].index:
-                            cax.axvline(d, color='grey', alpha=.25)
-
-                except IndexError:
-                    pass
-
-                cax.plot(
-                    ot / at,
-                    lw=1,
-                    color=ot_color
-                )
-                cax.plot(
-                    rt / at,
-                    lw=1,
-                    color=rt_color
-                )
-
-                # plot timeseries
-                ax.plot(
-                    df[metric],
-                    color='lightgrey',
-                    lw=1,
-                    zorder=0,
-                )
-
-                ax.plot(
-                    df[metric].idxmax(), df[metric].max(),
-                    'o', ms=15, color='orangered', alpha=0.5
-                )
-                ax.plot(
-                    df[metric].idxmax(), df[metric].max(),
-                    'o', ms=1,
-                    color='k',
-                    mfc='k',
-                    mec='k',
-                )
-
-                if rolling_avg:
-                    ts = df[metric].rolling(window_size, center=True).mean()
-                    ax.plot(
-                        ts,
-                        color=at_color,
-                        lw=1,
-                    )
-
-                vmax = np.ceil(df[metric].max()+.25)
-                ax.set_ylim(None, vmax)
-
-            except ValueError as e:
-                print(f'Value error for {df.index.name}: {e}.')
-                pass
-
-            ax.grid(True, which="both", axis='both', alpha=.3, lw=1, linestyle='-')
-            cax.grid(True, which="both", axis='both', alpha=.3, lw=1, linestyle='-')
-
-            cax.set_xticklabels([], minor=False)
-            cax.set_xticklabels([], minor=True)
-
-            cax.set_ylim(0, 1)
-            cax.set_yticks([0, .5, 1])
-            cax.set_yticklabels(['0', '.5', '1'])
-            cax.axhline(.5, color='k', lw=1)
-
-            ax.spines['right'].set_visible(False)
-            ax.spines['left'].set_visible(False)
-            ax.spines['top'].set_visible(False)
-
-            cax.spines['right'].set_visible(False)
-            cax.spines['left'].set_visible(False)
-
-            ax.text(
-                df[metric].idxmax(),
-                df[metric].max() + .2,
-                df[metric].idxmax().strftime('%Y/%m/%d'),
-                ha='center',
-                verticalalignment='center',
-                # transform=ax.transAxes,
-                color='grey'
-            )
-
-            i += 1
-
-            if c == 0:
-                cax.text(
-                    -0.22, 0.5, f"OT/RT\nBalance", ha='center',
-                    verticalalignment='center', transform=cax.transAxes
-                )
-
-                ax.text(
-                    -0.22, 0.5, f"AT", ha='center',
-                    verticalalignment='center', transform=ax.transAxes
-                )
-
-                ax.text(
-                    -0.22, 0.2, "Less\n↓", ha='center',
-                    verticalalignment='center', transform=ax.transAxes, color='grey'
-                )
-                ax.text(
-                    -0.22, 0.8, "↑\nMore", ha='center',
-                    verticalalignment='center', transform=ax.transAxes, color='grey'
-                )
-
-        plt.subplots_adjust(top=0.97, right=0.97, hspace=0.25)
-        plt.savefig(f'{savepath}.pdf', bbox_inches='tight', pad_inches=.25)
-        plt.savefig(f'{savepath}.png', dpi=300, bbox_inches='tight', pad_inches=.25)

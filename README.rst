@@ -2,8 +2,7 @@
 
 # Contagiograms 
 As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) project,
-we present a standalone python package for contagiograms:
-An instrument to approximate the daily usage of ngrams along with their popularity on Twitter.
+we present a Python package for visualizing contagiograms.
 
 
 ## Installation
@@ -75,6 +74,12 @@ optional arguments:
                         path to an input JSON file (default: None)
   -o OUTPUT, --output OUTPUT
                         path to save figure (default: ~/contagiograms)
+
+  --flipbook            a flag to combine contagiograms PDFs into a single flipbook (default: False)
+  --start_date START_DATE
+                        starting date for the query (default: 2010-01-01)
+  --t1 T1               time scale to investigate relative social amplification [eg, M, 2M, 6M, Y] (default: 1M)
+  --t2 T2               window size for smoothing the main timeseries [days] (default: 30)
 ```
 
 Currently, we have five layouts for contagiograms (rows x columns): 
@@ -109,7 +114,7 @@ as shown below [test.json](tests/test.json)
 }
 ```
 
-You can run it from your terminal 
+You can run it in your terminal 
 ```shell
 python contagiograms/contagiograms.py --flipbook -i tests/test.json -o tests/
 ```

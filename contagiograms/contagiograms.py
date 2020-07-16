@@ -9,15 +9,13 @@ import time
 from pathlib import Path
 from datetime import datetime
 
-import cli, utils, consts
+import cli
+import utils
+import consts
 
 
 def parse_args(args):
     parser = cli.parser()
-
-    # optional subparsers
-    subparsers = parser.add_subparsers(help='Arguments for specific action.', dest='dtype')
-    subparsers.required = False
 
     parser.add_argument(
         '-o', '--output',
@@ -37,6 +35,27 @@ def parse_args(args):
         action='store_true'
     )
 
+    parser.add_argument(
+        '--t1',
+        help='time scale to investigate relative social amplification [eg, M, 2M, 6M, Y]',
+        default='1M',
+        type=cli.valid_timescale
+    )
+
+    parser.add_argument(
+        '--t2',
+        help='window size for smoothing the main timeseries [days]',
+        default=int(30),
+        type=cli.valid_windowsize
+    )
+
+    parser.add_argument(
+        '--start_date',
+        help='starting date for the query',
+        default=datetime(2010, 1, 1),
+        type=cli.valid_date,
+    )
+
     return parser.parse_args(args)
 
 
@@ -53,8 +72,9 @@ def main(args=None):
         savepath=Path(args.output),
         lang_hashtbl=consts.supported_languages,
         nparser=consts.ngrams_parser,
-        case_sensitive=True,
-        start_date=datetime(2010, 1, 1)
+        start_date=args.start_date,
+        t1=args.t1,
+        t2=args.t2,
     )
 
     if args.flipbook:

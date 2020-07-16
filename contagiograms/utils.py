@@ -22,7 +22,8 @@ from bidi import algorithm as bidialg
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
-import consts, regexr
+import consts
+import regexr
 from query import Query
 
 
@@ -48,14 +49,15 @@ def flipbook(savepath, datapath):
     print(f"Saved: {savepath}/{datetime.date(datetime.now())}_flipbook_{datapath.stem}.pdf")
 
 
-
 def plot(
-        grams,
-        savepath,
-        lang_hashtbl=consts.supported_languages,
-        nparser=consts.ngrams_parser,
-        case_sensitive=True,
-        start_date=datetime(2010, 1, 1)
+    grams,
+    savepath,
+    lang_hashtbl=consts.supported_languages,
+    nparser=consts.ngrams_parser,
+    case_sensitive=True,
+    start_date=datetime(2010, 1, 1),
+    t1='1M',
+    t2=30,
 ):
     """ Plot a grid of contagiograms
 
@@ -66,6 +68,8 @@ def plot(
         nparser: compiled ngram parser
         case_sensitive: a toggle for case_sensitive lookups
         start_date: starting date for the query
+        t1: time scale to investigate relative social amplification [eg, M, 2M, 6M, Y]
+        t2: window size for smoothing the main timeseries [days]
     """
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
@@ -99,18 +103,22 @@ def plot(
         plot_contagiograms(
             f'{savepath}/{datetime.date(datetime.now())}_contagiograms_{key}',
             ngrams,
+            t1=t1,
+            t2=t2,
             shading=True,
             fullpage=True if len(ngrams) > 6 else False
         )
         print(f'Saved: {savepath}/{datetime.date(datetime.now())}_contagiograms_{key}')
 
 
-def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
+def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
     """ Plot a grid of contagiograms
 
     Args:
         savepath: path to save plot
         ngrams: a 2D-list of ngrams to plot
+        t1: time scale to investigate relative social amplification [eg, M, 2M, 6M, Y]
+        t2: window size for smoothing the main timeseries [days]
         shading: a toggle to either shade the area between the min and max or plot individual lines
         fullpage: a toggle to switch to 3 columns instead of 2
         saves a figure to {savepath}
@@ -132,7 +140,6 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
     gs = fig.add_gridspec(ncols=cols, nrows=rows)
     metric = 'rank'
     labels = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'.split(' ')
-    window_size = 30
     days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     vmin, vmax, vcenter, step = 0, 3, 1, .1
     contagion_color = 'orangered'
@@ -154,13 +161,11 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
         date_format = '%m\n%Y'
         major_locator = mdates.MonthLocator(range(1, int(np.ceil(diff.days/30) + 1)))
         minor_locator = mdates.AutoDateLocator()
-        contagion_resolution = 'W'
 
     else:
         date_format = '%Y'
         major_locator = mdates.YearLocator(2)
         minor_locator = mdates.YearLocator()
-        contagion_resolution = 'M'
 
     i = 0
     for r in np.arange(0, rows, step=size+1):
@@ -207,8 +212,8 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
             ) / ((df['lang_count'] - df['lang_count_no_rt']) / df['lang_count'])
             alpha = alpha.replace([np.inf, -np.inf, np.nan], 1)
 
-            at = df['count'].resample(contagion_resolution).mean()
-            ot = df['count_no_rt'].resample(contagion_resolution).mean()
+            at = df['count'].resample(t1).mean()
+            ot = df['count_no_rt'].resample(t1).mean()
             rt = at - ot
 
             lang, word = df.index.name.split('\n')
@@ -328,7 +333,7 @@ def plot_contagiograms(savepath, ngrams, shading=True, fullpage=False):
                     )
 
                 ax.plot(
-                    df[metric].rolling(window_size, center=True).mean(),
+                    df[metric].rolling(t2, center=True).mean(),
                     color='k',
                     lw=1,
                 )

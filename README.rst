@@ -1,5 +1,5 @@
 .. image:: tests/2020-07-16_contagiograms_test4.png
-   :width: 400
+   :height: 500
    :align: center
 
 

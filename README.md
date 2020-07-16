@@ -1,8 +1,8 @@
-![contagiograms](tests/2020-07-15_contagiograms_test4.png)
+![contagiograms](tests/2020-07-16_contagiograms_test4.png)
 
 # Contagiograms 
 As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) project,
-we present a standalone python package for `Contagiograms`:
+we present a standalone python package for contagiograms:
 An instrument to approximate the daily usage of ngrams along with their popularity on Twitter.
 
 

@@ -93,7 +93,7 @@ Optional arguments:
 
 Currently, we have five layouts for contagiograms (rows x columns)
 
-Configurations: (1 x 2), (1 x 2), (2 x 2), (3 x 2), (3 x 3), and (4 x 3).
+**Configurations**: (1 x 2), (1 x 2), (2 x 2), (3 x 2), (3 x 3), and (4 x 3).
 
 
 To pass in your own ngrams you need a JSON file strucured with any of the configurations noted above (see [test.json](tests/test.json))

@@ -6,7 +6,7 @@ Licensed under the MIT License;
 
 import setuptools
 
-with open("README.rst", "r") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 with open('requirements.txt') as f:
@@ -17,7 +17,7 @@ setuptools.setup(
     version='1.0.0',
     description='An instrument to approximate the daily usage of ngrams along with their popularity on Twitter.',
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     keywords='NLP twitter contagion ngrams',
     url='https://gitlab.com/compstorylab/contagiograms',
     author='Thayer Alshaabi',

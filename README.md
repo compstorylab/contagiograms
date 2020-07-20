@@ -5,8 +5,6 @@
 
 As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) project, we present a Python package for visualizing contagiograms.
 
-While rank time series for n-grams give us the bare temporal threads that make up the tapestries of major stories, our data set offers more dimensions to explore. Per our introductory remarks on the limitations of text corpora, the most important enablement of our database is the ability to explore story amplification.
-
 ## Description 
 
 With these expanded time series visualizations, we convey the degree to which an n-gram τ is retweeted both overall and relative to the background level of retweeting for a given language ℓ. We show both rates as retweet rates change strongly over time and variably so across languages.

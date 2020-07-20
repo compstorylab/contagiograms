@@ -1,15 +1,3 @@
-$$
-\newcommand{\lexiconsymbol}{\mathcal{D}}
-\newcommand{\alltweetsym}{\textrm{AT}}
-\newcommand{\organictweetsym}{\textrm{OT}}
-\newcommand{\retweetsym}{\textrm{RT}}
-\newcommand{\lexiconAT}{\lexiconsymbol_{t,\ell;n}}
-\newcommand{\lexiconOT}{\lexiconsymbol^{(\organictweetsym)}_{t,\ell;n}}
-\newcommand{\lexiconRT}{\lexiconsymbol^{(\retweetsym)}_{t,\ell;n}}
-\newcommand{\RTrate}{R}
-\newcommand{\relativeRTrate}{R^{\textrm{rel}}}
-$$
-
 ![contagiograms](tests/2020-07-20_contagiograms_test4.png)
 
 
@@ -17,69 +5,34 @@ $$
 
 As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) project, we present a Python package for visualizing contagiograms.
 
-While rank time series for $n$-grams give us the bare temporal threads that make up the tapestries of major stories, our data set offers more dimensions to explore. Per our introductory remarks on the limitations of text corpora, the most important enablement of our database is the ability to explore story amplification.
+While rank time series for n-grams give us the bare temporal threads that make up the tapestries of major stories, our data set offers more dimensions to explore. Per our introductory remarks on the limitations of text corpora, the most important enablement of our database is the ability to explore story amplification.
 
 ## Description 
 
-With these expanded time series visualizations, we convey the degree to which an $n$-gram ($\tau$) is retweeted both overall and relative to the background level of retweeting for a given language ($\ell$). We show both rates as retweet rates change strongly over time and variably so across languages.
+With these expanded time series visualizations, we convey the degree to which an n-gram τ is retweeted both overall and relative to the background level of retweeting for a given language ℓ. We show both rates as retweet rates change strongly over time and variably so across languages.
 
 <img src="tests/2020-07-20_contagiograms_test1.png" alt="contagiograms" style="zoom:50%;" />
 
-Each contagiogram has three panels. The main panel at the bottom charts, as before, the rank time series for a given $n$-gram. For contagiograms running over a decade, we show rank time series in this main panel with  month-scale smoothing (black line), and add a background shading in gray indicating the highest and lowest rank of each week.
+Each contagiogram has three panels. The main panel at the bottom charts, as before, the rank time series for a given n-gram. For contagiograms running over a decade, we show rank time series in this main panel with month-scale smoothing (black line), and add a background shading in gray indicating the highest and lowest rank of each week.
 
-The top two panels of each contagiogram capture the raw and relative social amplification for each $n$-gram.
+The top two panels of each contagiogram capture the raw and relative social amplification for each n-gram.
 
-First, the top panel displays the raw $\retweetsym/\organictweetsym$ balance, the monthly relative volumes of each $n$-gram in retweets (\retweetsym, orange) and organic tweets (\organictweetsym, blue):
-$$
-\begin{equation}
-  \label{eq:storywrangler.RTrate}
-  \RTrate_{\tau,t,\ell}
-  =
-  f_{\tau,t,\ell}^{(\retweetsym)}
-  /
-  \left(
-  f_{\tau,t,\ell}^{(\retweetsym)}
-  +
-  f_{\tau,t,\ell}^{(\organictweetsym)}
-  \right).
-\end{equation}
-$$
-When the balance of appearances in retweets outweighs those in organic tweets, $$\RTrate_{\tau,t,\ell} > 0.5$$, we view the $n$-gram as nominally being amplified, and we add a solid background for emphasis.
+First, the top panel displays the raw R<sub>{τ,t,ℓ}</sub> balance, the monthly relative volumes of each n-gram in retweets (RT, orange) and organic tweets (OT, blue):
 
-Second, in the middle panel of each contagiogram, we display a heatmap of the values of the relative amplification rate for $n$-gram $\tau$ in language $\ell$, $\relativeRTrate_{_{\tau,t,\ell}}$, over time. Building on from the \retweetsym/\organictweetsym\ balance, we define $\relativeRTrate_{\tau,t,\ell}$ as:
-$$
-\begin{align}
-\label{eq:storywrangler.relativeRTrate}
-\relativeRTrate_{\tau,t,\ell}
-&=
-\frac{
-  f_{\tau,t,\ell}^{(\retweetsym)}
-  /
-  \left(
-  f_{\tau,t,\ell}^{(\retweetsym)}
-  +
-  f_{\tau,t,\ell}^{(\organictweetsym)}
-  \right)
-}{
-  \sum_{\tau'}
-  f_{\tau',t,\ell}^{(\retweetsym)}
-  /
-  \sum_{\tau'}
-  \left(
-  f_{\tau',t,\ell}^{(\retweetsym)}
-  +
-  f_{\tau',t,\ell}^{(\organictweetsym)}
-  \right)
-},
-\end{align}
-$$
-where the denominator gives the overall fraction of $n$-grams that are found in retweets on day $t$ for language $\ell$. While still averaging at month scales, we now do so based on day of the week. Shades of red indicate that the relative volume of $n$-gram $\tau$ is being socially amplified over the baseline of retweets in language $\ell$, $\relativeRTrate_{\tau,t,\ell} > 1$, while gray encodes the opposite, $\relativeRTrate_{\tau,t,\ell} < 1$.
+<img src="eq1.svg" alt="Eq1"/>
+
+When the balance of appearances in retweets outweighs those in organic tweets, R<sub>{τ,t,ℓ}</sub> > 0.5, we view the n-gram as nominally being amplified, and we add a solid background for emphasis.
+
+Second, in the middle panel of each contagiogram, we display a heatmap of the values of the relative amplification rate for n-gram τ in language ℓ, R<sup>rel</sup><sub>{τ,t,ℓ}</sub>, over time. Building on from the R<sub>{τ,t,ℓ}</sub> balance, we define R<sup>rel</sup><sub>{τ,t,ℓ}</sub> as:
+
+<img src="eq2.svg" alt="Eq2"/>
+
+where the denominator gives the overall fraction of n-grams that are found in retweets on day t for language ℓ. While still averaging at month scales, we now do so based on day of the week. Shades of red indicate that the relative volume of n-gram τ is being socially amplified over the baseline of retweets in language ℓ, R<sup>rel</sup><sub>{τ,t,ℓ}</sub> > 1, while gray encodes the opposite, R<sup>rel</sup><sub>{τ,t,ℓ}</sub> < 1.
 
 
 ## Installation
 
-You can install the latest verion by cloning the repo and running 
-[setup.py](setup.py) script in your terminal
+You can install the latest verion by cloning the repo and running [setup.py](setup.py) script in your terminal
 
 ```shell 
 git clone https://gitlab.com/compstorylab/contagiograms.git

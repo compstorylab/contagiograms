@@ -134,9 +134,22 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
     })
     size = 6
     r = len(ngrams)//3 if fullpage else len(ngrams)//2
-    rows = (r*size)+r if fullpage else (r*size)+r
-    cols = 3 if fullpage else 2
-    fig = plt.figure(figsize=(12, size+(2*r+2))) if fullpage else plt.figure(figsize=(8, size+(2*r)))
+
+    if len(ngrams) == 1:
+        cols = 1
+        rows = size
+    else:
+        cols = 3 if fullpage else 2
+        rows = (r * size) + r if fullpage else (r * size) + r
+
+    if len(ngrams) == 1:
+        figsize = (4, 4)
+    elif len(ngrams) == 2:
+        figsize = (8, 6)
+    else:
+        figsize = (12, size+(2*r+2)) if fullpage else (8, size+(2*r))
+
+    fig = plt.figure(figsize=figsize)
     gs = fig.add_gridspec(ncols=cols, nrows=rows)
     metric = 'rank'
     labels = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'.split(' ')
@@ -147,12 +160,13 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
     otcmap = plt.get_cmap('Greys_r', 256)
 
     cmap = np.vstack((
-        otcmap(np.linspace(.4, 1, int(abs(vcenter - vmin)/step))),
-        rtcmap(np.linspace(0, 1, int(abs(vcenter - vmax)/step)))
+        otcmap(np.linspace(.4, 1-step, int(abs(vcenter - vmin)/step))),
+        [1, 1, 1, 1],
+        rtcmap(np.linspace(0, 1+step, int(abs(vcenter - vmax)/step)))
     ))
     cmap = mcolors.ListedColormap(cmap)
-    minr, maxr = 1, 10**6
 
+    minr, maxr = 1, 10**6
     start_date = ngrams[0].index[0]
     end_date = ngrams[0].index[-1]
     diff = end_date - start_date
@@ -170,7 +184,6 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
     i = 0
     for r in np.arange(0, rows, step=size+1):
         for c in np.arange(cols):
-
             cax = fig.add_subplot(gs[r, c])
             langax = fig.add_subplot(gs[r+1:r+3, c])
             ax = fig.add_subplot(gs[r+3:r+size, c])
@@ -365,7 +378,7 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                 minor=False
             )
             ax.yaxis.set_minor_locator(
-                ticker.LogLocator(base=10.0, subs=(0.2, 0.4, 0.6, 0.8), numticks=30)
+                ticker.LogLocator(base=10.0, subs=np.arange(.1, 1, step=.1), numticks=30)
             )
 
             cax.set_ylim(0, 1)
@@ -391,6 +404,8 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                 xycoords="axes fraction", fontsize=16,
             )
 
+
+
             if c == cols-1:
                 cax.legend(
                     handles=[
@@ -398,7 +413,7 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                         Line2D([0], [0], color=consts.types_colors['RT'], lw=2, label=r'RT'),
                     ],
                     loc='center right',
-                    bbox_to_anchor=(1.22, .5),
+                    bbox_to_anchor=(1.2, .5),
                     ncol=1,
                     frameon=False,
                     fontsize=8,
@@ -421,30 +436,31 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                 )
 
                 cbarax.yaxis.set_label_position('right')
-                cbarax.set_ylabel(r'$\alpha$', rotation=0, labelpad=10)
 
             if c == 0:
+                x = -.22
                 langax.text(
-                    -0.22, 0.5, r"$\alpha = \dfrac{p_{\tau}^{(\mathsf{RT})}}{p_{\ell}^{(\mathsf{RT})}}$", ha='center',
+                    x, 0.5, r"$R^{\mathsf{rel}}_{\tau,t,\ell}$",
+                    ha='center', fontsize=14,
                     verticalalignment='center', transform=langax.transAxes
                 )
 
                 cax.text(
-                    -0.22, 0.5, f"OT/RT\nBalance", ha='center',
+                    x, 0.5, f"RT/OT\nBalance", ha='center',
                     verticalalignment='center', transform=cax.transAxes
                 )
 
                 ax.text(
-                    -0.22, 0.5, r"$n$-gram"+"\nrank\n"+r"$r$", ha='center',
+                    x, 0.5, r"$n$-gram"+"\nrank\n"+r"$r$", ha='center',
                     verticalalignment='center', transform=ax.transAxes
                 )
 
                 ax.text(
-                    -0.22, 0.1, "Less\nTalked\nAbout\n↓", ha='center', fontsize=8,
+                    x, 0.1, "Less\nTalked\nAbout\n↓", ha='center', fontsize=8,
                     verticalalignment='center', transform=ax.transAxes, color='grey'
                 )
                 ax.text(
-                    -0.22, 0.9, "↑\nMore\nTalked\nAbout", ha='center', fontsize=8,
+                    x, 0.9, "↑\nMore\nTalked\nAbout", ha='center', fontsize=8,
                     verticalalignment='center', transform=ax.transAxes, color='grey'
                 )
 

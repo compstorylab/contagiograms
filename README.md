@@ -17,17 +17,21 @@ Each contagiogram has three panels. The main panel at the bottom charts, as befo
 
 The top two panels of each contagiogram capture the raw and relative social amplification for each n-gram.
 
-First, the top panel displays the raw R<sub>{τ,t,ℓ}</sub> balance, the monthly relative volumes of each n-gram in retweets (RT, orange) and organic tweets (OT, blue):
+First, the top panel displays the raw R<sub>τ,t,ℓ</sub> balance, the monthly relative volumes of each n-gram in retweets (RT, orange) and organic tweets (OT, blue):
 
-<img src="eq1.svg" alt="Eq1"/>
+<center>
+    <img align='center' src="eq1.svg" alt="Eq1"/>
+</center>
 
-When the balance of appearances in retweets outweighs those in organic tweets, R<sub>{τ,t,ℓ}</sub> > 0.5, we view the n-gram as nominally being amplified, and we add a solid background for emphasis.
+When the balance of appearances in retweets outweighs those in organic tweets, R<sub>τ,t,ℓ</sub> > 0.5, we view the n-gram as nominally being amplified, and we add a solid background for emphasis.
 
-Second, in the middle panel of each contagiogram, we display a heatmap of the values of the relative amplification rate for n-gram τ in language ℓ, R<sup>rel</sup><sub>{τ,t,ℓ}</sub>, over time. Building on from the R<sub>{τ,t,ℓ}</sub> balance, we define R<sup>rel</sup><sub>{τ,t,ℓ}</sub> as:
+Second, in the middle panel of each contagiogram, we display a heatmap of the values of the relative amplification rate for n-gram τ in language ℓ, R<sup>rel</sup><sub>τ,t,ℓ</sub>, over time. Building on from the R<sub>τ,t,ℓ</sub> balance, we define R<sup>rel</sup><sub>τ,t,ℓ</sub> as:
 
-<img src="eq2.svg" alt="Eq2"/>
+<center>
+    <img align='center' src="eq2.svg" alt="Eq2"/>
+</center>
 
-where the denominator gives the overall fraction of n-grams that are found in retweets on day t for language ℓ. While still averaging at month scales, we now do so based on day of the week. Shades of red indicate that the relative volume of n-gram τ is being socially amplified over the baseline of retweets in language ℓ, R<sup>rel</sup><sub>{τ,t,ℓ}</sub> > 1, while gray encodes the opposite, R<sup>rel</sup><sub>{τ,t,ℓ}</sub> < 1.
+where the denominator gives the overall fraction of n-grams that are found in retweets on day t for language ℓ. While still averaging at month scales, we now do so based on day of the week. Shades of red indicate that the relative volume of n-gram τ is being socially amplified over the baseline of retweets in language ℓ, R<sup>rel</sup><sub>τ,t,ℓ</sub> > 1, while gray encodes the opposite, R<sup>rel</sup><sub>τ,t,ℓ</sub> < 1.
 
 
 ## Installation

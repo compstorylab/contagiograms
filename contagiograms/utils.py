@@ -399,12 +399,11 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
             langax.tick_params(axis='y', which='both', length=0)
             langax.set_yticklabels(days, va="top")
 
-            cax.annotate(
-                labels[i], xy=(-.15, 1.25), color='k', weight='bold',
-                xycoords="axes fraction", fontsize=16,
-            )
-
-
+            if cols > 1:
+                cax.annotate(
+                    labels[i], xy=(-.15, 1.25), color='k', weight='bold',
+                    xycoords="axes fraction", fontsize=16,
+                )
 
             if c == cols-1:
                 cax.legend(

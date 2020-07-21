@@ -1,4 +1,4 @@
-![contagiograms](tests/2020-07-20_contagiograms_test4.png)
+![contagiograms](tests/2020-07-21_contagiograms_test4.png)
 
 
 # Contagiograms 
@@ -9,7 +9,7 @@ As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) pr
 
 With these expanded time series visualizations, we convey the degree to which an n-gram τ is retweeted both overall and relative to the background level of retweeting for a given language ℓ. We show both rates as retweet rates change strongly over time and variably so across languages.
 
-<img src="tests/2020-07-20_contagiograms_test1.png" alt="contagiograms" style="zoom:50%;" />
+<img src="tests/2020-07-21_contagiograms_test1.png" alt="contagiograms" style="zoom:50%;" />
 
 Each contagiogram has three panels. The main panel at the bottom charts, as before, the rank time series for a given n-gram. For contagiograms running over a decade, we show rank time series in this main panel with month-scale smoothing (black line), and add a background shading in gray indicating the highest and lowest rank of each week.
 
@@ -59,40 +59,6 @@ pip install -e .
 ```
 
 ## Usage
-
-
-### Python module
-
-```python
-from datetime import datetime
-from contagiograms import utils as cg
-
-ngrams = {
-    "test1": [
-        ["Black Lives Matter", "en"]
-    ],
-    "test2": [
-        ["Game of Thrones", "en"], ["The Walking Dead", "en"]
-    ],
-    "test4": [
-        ["Copa Mundial", "es"], ["Pasqua", "it"],
-        ["@NASA", "en"], ["klimatet", "sv"]
-    ]
-}
-
-cg.plot(ngrams, 'tests/')
-
-# or using a JSON file 
-cg.plot(
-    'tests/test.json', 
-    savepath='tests/',
-    case_sensitive=True,
-    start_date=datetime(2010, 1, 1)
-)
-
-# combine PDFs into a single flipbook
-cg.flipbook(savepath='.', datapath='tests/')
-```
 
 
 ### Command line interface 
@@ -157,5 +123,38 @@ Try it in your terminal
 
 ```shell
 python contagiograms/contagiograms.py --flipbook -i tests/test.json -o tests/
+```
+
+### Python module
+
+```python
+from datetime import datetime
+from contagiograms import utils as cg
+
+ngrams = {
+    "test1": [
+        ["Black Lives Matter", "en"]
+    ],
+    "test2": [
+        ["Game of Thrones", "en"], ["The Walking Dead", "en"]
+    ],
+    "test4": [
+        ["Copa Mundial", "es"], ["Pasqua", "it"],
+        ["@NASA", "en"], ["klimatet", "sv"]
+    ]
+}
+
+cg.plot(ngrams, 'tests/')
+
+# or using a JSON file 
+cg.plot(
+    'tests/test.json', 
+    savepath='tests/',
+    case_sensitive=True,
+    start_date=datetime(2010, 1, 1)
+)
+
+# combine PDFs into a single flipbook
+cg.flipbook(savepath='.', datapath='tests/')
 ```
 

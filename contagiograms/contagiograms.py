@@ -58,9 +58,6 @@ def parse_args(args):
 def main(args=None):
     timeit = time.time()
 
-    if args is None:
-        args = sys.argv[1:]
-
     args = parse_args(args)
 
     utils.plot(

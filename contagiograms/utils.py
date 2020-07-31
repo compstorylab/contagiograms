@@ -4,6 +4,7 @@ Copyright (c) 2020 The Computational Story Lab.
 Licensed under the MIT License;
 """
 
+import logging
 import warnings
 from datetime import datetime
 from pathlib import Path
@@ -25,9 +26,8 @@ from PyPDF2 import PdfFileMerger, PdfFileReader
 from query import Query
 
 register_matplotlib_converters()
-
-
 warnings.simplefilter("ignore")
+logger = logging.getLogger(__name__)
 
 
 def flipbook(savepath, datapath):
@@ -39,7 +39,7 @@ def flipbook(savepath, datapath):
     pdf = PdfFileMerger()
 
     for f in datapath.rglob("*.pdf"):
-        print(f)
+        logger.info(f)
         pdf.append(PdfFileReader(str(f), "rb"))
 
     pdf.write(
@@ -47,7 +47,7 @@ def flipbook(savepath, datapath):
     )
     pdf.close()
 
-    print(
+    logger.info(
         f"Saved: {savepath}/{datetime.date(datetime.now())}_flipbook_{datapath.stem}.pdf"
     )
 
@@ -85,7 +85,7 @@ def plot(
         ngrams = []
         for i, (w, lang) in enumerate(listt[:12]):
             n = len(regexr.ngrams(w, parser=nparser, n=1))
-            print(f"Retrieving {lang_hashtbl.get(lang)}: {n}gram -- '{w}'")
+            logger.info(f"Retrieving {lang_hashtbl.get(lang)}: {n}gram -- '{w}'")
 
             q = Query(f"{n}grams", lang)
 
@@ -114,7 +114,9 @@ def plot(
             shading=True,
             fullpage=True if len(ngrams) > 6 else False,
         )
-        print(f"Saved: {savepath}/{datetime.date(datetime.now())}_contagiograms_{key}")
+        logger.info(
+            f"Saved: {savepath}/{datetime.date(datetime.now())}_contagiograms_{key}"
+        )
 
 
 def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
@@ -332,7 +334,7 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                 )
 
             except ValueError as e:
-                print(f"Value error for {df.index.name}: {e}.")
+                logger.info(f"Value error for {df.index.name}: {e}.")
 
             ax.grid(True, which="both", axis="both", alpha=0.3, lw=1, linestyle="-")
             cax.grid(True, which="both", axis="both", alpha=0.3, lw=1, linestyle="-")

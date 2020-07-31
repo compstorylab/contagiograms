@@ -4,12 +4,15 @@ Copyright (c) 2020 The Computational Story Lab.
 Licensed under the MIT License;
 """
 
+import logging
 import time
 from pathlib import Path
 
 import cli
 import consts
 import utils
+
+logger = logging.getLogger(__name__)
 
 
 def main(args=None):
@@ -32,7 +35,7 @@ def main(args=None):
             savepath=Path(args.output), datapath=Path(args.output),
         )
 
-    print(f"Total time elapsed: {time.time() - timeit:.2f} sec.")
+    logger.info(f"Total time elapsed: {time.time() - timeit:.2f} sec.")
 
 
 if __name__ == "__main__":

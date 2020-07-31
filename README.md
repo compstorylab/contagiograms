@@ -63,7 +63,7 @@ pip install -e .
 
 ### Command line interface 
 
-Navigate to the main ``contagiograms`` directory  and run [contagiograms.py](tescontagiogramsts/contagiograms.py)
+Navigate to the main ``contagiograms`` directory  and run [contagiograms.py](contagiograms/contagiograms.py)
 ```
 usage: contagiograms.py [-h] [-o OUTPUT] [-i INPUT] [--flipbook] [--t1 T1] [--t2 T2] [--start_date START_DATE]
 

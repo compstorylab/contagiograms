@@ -1,4 +1,4 @@
-![contagiograms](tests/2020-07-21_contagiograms_test4.png)
+![contagiograms](tests/2020-07-31_contagiograms_test4.png)
 
 
 # Contagiograms 
@@ -9,7 +9,7 @@ As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) pr
 
 With these expanded time series visualizations, we convey the degree to which an n-gram τ is retweeted both overall and relative to the background level of retweeting for a given language ℓ. We show both rates as retweet rates change strongly over time and variably so across languages.
 
-<img src="tests/2020-07-21_contagiograms_test1.png" alt="contagiograms" style="zoom:50%;" />
+<img src="tests/2020-07-31_contagiograms_test1.png" alt="contagiograms" style="zoom:50%;" />
 
 Each contagiogram has three panels. The main panel at the bottom charts, as before, the rank time series for a given n-gram. For contagiograms running over a decade, we show rank time series in this main panel with month-scale smoothing (black line), and add a background shading in gray indicating the highest and lowest rank of each week.
 
@@ -63,7 +63,7 @@ pip install -e .
 
 ### Command line interface 
 
-Navigate to the main ``contagiograms`` directory  and run [contagiograms.py](tescontagiogramsts/contagiograms.py)
+Navigate to the main ``contagiograms`` directory  and run [contagiograms.py](contagiograms/contagiograms.py)
 ```
 usage: contagiograms.py [-h] [-o OUTPUT] [-i INPUT] [--flipbook] [--t1 T1] [--t2 T2] [--start_date START_DATE]
 

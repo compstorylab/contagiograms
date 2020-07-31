@@ -1,52 +1,50 @@
-"""
-Contagiograms
-Copyright (c) 2020 The Computational Story Lab.
-Licensed under the MIT License;
-"""
 
-import ujson
-import numpy as np
-import pandas as pd
-from pathlib import Path
+import logging
+import warnings
 from datetime import datetime
-from PyPDF2 import PdfFileReader, PdfFileMerger
-
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-import matplotlib.dates as mdates
-import matplotlib.colors as mcolors
-import matplotlib.ticker as ticker
-
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-from bidi import algorithm as bidialg
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
+from pathlib import Path
 
 import consts
+import matplotlib.colors as mcolors
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import numpy as np
+import pandas as pd
 import regexr
+import ujson
+from bidi import algorithm as bidialg
+from matplotlib.lines import Line2D
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from pandas.plotting import register_matplotlib_converters
+from PyPDF2 import PdfFileMerger, PdfFileReader
 from query import Query
 
-
-import warnings
+register_matplotlib_converters()
 warnings.simplefilter("ignore")
+logger = logging.getLogger(__name__)
 
 
 def flipbook(savepath, datapath):
     """ Combine PDFs into a flipBook
     Args:
         savepath: path to save generated pdf
-        files: a list of files to combine
+        datapath: directory containing pdfs to be processed
     """
     pdf = PdfFileMerger()
 
-    for f in datapath.rglob('*.pdf'):
-        print(f)
-        pdf.append(PdfFileReader(str(f), 'rb'))
+    for f in datapath.rglob("*.pdf"):
+        logger.info(f)
+        pdf.append(PdfFileReader(str(f), "rb"))
 
-    pdf.write(f"{savepath}/{datetime.date(datetime.now())}_flipbook_{datapath.stem}.pdf")
+    pdf.write(
+        f"{savepath}/{datetime.date(datetime.now())}_flipbook_{datapath.stem}.pdf"
+    )
     pdf.close()
 
-    print(f"Saved: {savepath}/{datetime.date(datetime.now())}_flipbook_{datapath.stem}.pdf")
+    logger.info(
+        f"Saved: {savepath}/{datetime.date(datetime.now())}_flipbook_{datapath.stem}.pdf"
+    )
 
 
 def plot(
@@ -56,7 +54,7 @@ def plot(
     nparser=consts.ngrams_parser,
     case_sensitive=True,
     start_date=datetime(2010, 1, 1),
-    t1='1M',
+    t1="1M",
     t2=30,
 ):
     """ Plot a grid of contagiograms
@@ -75,40 +73,45 @@ def plot(
     Path(savepath).mkdir(parents=True, exist_ok=True)
 
     if type(grams) != dict:
-        with open(grams, 'r') as data:
+        with open(grams, "r") as data:
             grams = ujson.load(data)
 
     for key, listt in grams.items():
         ngrams = []
         for i, (w, lang) in enumerate(listt[:12]):
             n = len(regexr.ngrams(w, parser=nparser, n=1))
-            print(f"Retrieving {lang_hashtbl.get(lang)}: {n}gram -- '{w}'")
+            logger.info(f"Retrieving {lang_hashtbl.get(lang)}: {n}gram -- '{w}'")
 
-            q = Query(f'{n}grams', lang)
+            q = Query(f"{n}grams", lang)
 
             if case_sensitive:
                 d = q.query_timeseries(w, start_time=start_date)
             else:
                 d = q.query_insensitive_timeseries(w, start_time=start_date)
 
-            d.index.name = f"{lang_hashtbl.get(lang)}\n'{w}'" \
-                if lang_hashtbl.get(lang) is not None else f"All\n'{w}'"
+            d.index.name = (
+                f"{lang_hashtbl.get(lang)}\n'{w}'"
+                if lang_hashtbl.get(lang) is not None
+                else f"All\n'{w}'"
+            )
 
-            q = Query('languages', 'languages')
+            q = Query("languages", "languages")
             lang = q.query_languages(lang, start_time=start_date)
-            d['lang_count'] = lang['count']
-            d['lang_count_no_rt'] = lang['count_no_rt']
+            d["lang_count"] = lang["count"]
+            d["lang_count_no_rt"] = lang["count_no_rt"]
             ngrams.append(d)
 
         plot_contagiograms(
-            f'{savepath}/{datetime.date(datetime.now())}_contagiograms_{key}',
+            f"{savepath}/{datetime.date(datetime.now())}_contagiograms_{key}",
             ngrams,
             t1=t1,
             t2=t2,
             shading=True,
-            fullpage=True if len(ngrams) > 6 else False
+            fullpage=True if len(ngrams) > 6 else False,
         )
-        print(f'Saved: {savepath}/{datetime.date(datetime.now())}_contagiograms_{key}')
+        logger.info(
+            f"Saved: {savepath}/{datetime.date(datetime.now())}_contagiograms_{key}"
+        )
 
 
 def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
@@ -352,8 +355,7 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                 )
 
             except ValueError as e:
-                print(f'Value error for {df.index.name}: {e}.')
-                pass
+                logger.warning(f'Value error for {df.index.name}: {e}.')
 
             ax.grid(True, which="both", axis='both', alpha=.3, lw=1, linestyle='-')
             cax.grid(True, which="both", axis='both', alpha=.3, lw=1, linestyle='-')
@@ -468,4 +470,3 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
         plt.subplots_adjust(top=0.97, right=0.97, hspace=0.5)
         plt.savefig(f'{savepath}.pdf', bbox_inches='tight', pad_inches=.25)
         plt.savefig(f'{savepath}.png', dpi=300, bbox_inches='tight', pad_inches=.25)
-

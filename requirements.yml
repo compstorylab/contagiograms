@@ -4,8 +4,9 @@ channels:
   - defaults
 dependencies:
   - matplotlib
+  - numpy
   - pandas
   - pymongo
+  - pypdf2
   - python-bidi
   - ujson
-  - pypdf2

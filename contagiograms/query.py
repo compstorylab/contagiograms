@@ -1,8 +1,4 @@
-"""
-Contagiograms
-Copyright (c) 2020 The Computational Story Lab.
-Licensed under the MIT License;
-"""
+
 
 import datetime
 

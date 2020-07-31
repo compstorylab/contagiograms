@@ -1,8 +1,3 @@
-"""
-Contagiograms
-Copyright (c) 2020 The Computational Story Lab.
-Licensed under the MIT License;
-"""
 
 import re
 
@@ -13,7 +8,6 @@ types_colors = {
     "RT": "darkorange",
     "OT": "steelblue",
 }
-
 
 fm._rebuild()
 fonts = {

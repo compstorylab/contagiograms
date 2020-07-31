@@ -1,9 +1,5 @@
-"""
-Contagiograms
-Copyright (c) 2020 The Computational Story Lab.
-Licensed under the MIT License;
-"""
 
+import sys
 import logging
 import time
 from pathlib import Path
@@ -12,7 +8,11 @@ import cli
 import consts
 import utils
 
-logger = logging.getLogger(__name__)
+logging.basicConfig(
+    stream=sys.stdout,
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 
 def main(args=None):
@@ -35,7 +35,7 @@ def main(args=None):
             savepath=Path(args.output), datapath=Path(args.output),
         )
 
-    logger.info(f"Total time elapsed: {time.time() - timeit:.2f} sec.")
+    logging.info(f"Total time elapsed: {time.time() - timeit:.2f} sec.")
 
 
 if __name__ == "__main__":

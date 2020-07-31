@@ -34,7 +34,7 @@ def flipbook(savepath, datapath):
     """ Combine PDFs into a flipBook
     Args:
         savepath: path to save generated pdf
-        files: a list of files to combine
+        datapath: directory containing pdfs to be processed
     """
     pdf = PdfFileMerger()
 

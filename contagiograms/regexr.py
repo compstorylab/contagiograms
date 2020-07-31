@@ -23,8 +23,10 @@ def hex2unicode(code):
 
 def remove_whitespaces(text):
     """ Strip out extra whitespaces
-    :param text: a string
-    :return: cleaned text
+    Args:
+        text: a string
+
+    Returns: cleaned text
     """
     text = re.sub(r"\s\s+", " ", text)
     text = re.sub(r"\n|\t", " ", text)
@@ -37,9 +39,11 @@ def remove_whitespaces(text):
 
 def ngram_parser(text, ngram_parser):
     """ Parse out N-grams using a custom regex
-    :param: text: a string object
-    :param ngram_parser: a compiled regex expression to extract one-grams
-    :return a list of 1-grams
+    Args:
+        text: a string object
+        ngram_parser: a compiled regex expression to extract one-grams
+
+    Returns: a list of 1-grams
     """
     # take care of a few edge cases
     text = re.sub(r"(([\-\.]{2,})|(\'\'))", r" \1 ", text)
@@ -48,10 +52,12 @@ def ngram_parser(text, ngram_parser):
 
 def ngrams(s, parser, n=1):
     """ Concatenate tokens into ngrams
-    :param s: a string object
-    :param parser: a compiled regex expression to extract one-grams
-    :param n: the degree of the ngrams
-    :return: a Counter object of n-grams
+    Args:
+        s: a string object
+        parser: a compiled regex expression to extract one-grams
+        n: the degree of the ngrams
+
+    Returns: a Counter object of n-grams
     """
     tokens = ngram_parser(s, parser)
 

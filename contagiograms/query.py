@@ -23,6 +23,16 @@ class Query:
         self.tweets = db[lang]
         self.lang = lang
 
+        self.cols = ["count", "count_no_rt", "rank", "rank_no_rt", "freq", "freq_no_rt"]
+        self.db_cols = [
+            "counts",
+            "count_noRT",
+            "rank",
+            "rank_noRT",
+            "freq",
+            "freq_noRT",
+        ]
+
     def query_timeseries_array(self, word_list=None, start_time=None):
         """Query database for an array n-gram timeseries
 
@@ -73,26 +83,11 @@ class Query:
         Returns (pd.DataFrame):
             dataframe of count, rank, and frequency over time for an n-gram
         """
-        cols = ["count", "count_no_rt", "rank", "rank_no_rt", "freq", "freq_no_rt"]
-        db_cols = ["counts", "count_noRT", "rank", "rank_noRT", "freq", "freq_noRT"]
-
-        if start_time:
-            query = {"word": word, "time": {"$gte": start_time}}
-            start = start_time
-        else:
-            query = {"word": word}
-            start = datetime.datetime(2008, 9, 1)
-
-        data = {
-            d: {c: np.nan for c in cols}
-            for d in pd.date_range(
-                start=start.date(), end=datetime.datetime.today().date(), freq="D"
-            ).date
-        }
+        query, data = self.prepare_query(word, start_time)
 
         for i in self.tweets.find(query):
             d = i["time"].date()
-            for c, db in zip(cols, db_cols):
+            for c, db in zip(self.cols, self.db_cols):
                 data[d][c] = i[db]
 
         df = pd.DataFrame.from_dict(data=data, orient="index")
@@ -110,28 +105,13 @@ class Query:
         Returns (pd.DataFrame):
             dataframe of count, rank, and frequency over time for an n-gram
         """
-        cols = ["count", "count_no_rt", "rank", "rank_no_rt", "freq", "freq_no_rt"]
-        db_cols = ["counts", "count_noRT", "rank", "rank_noRT", "freq", "freq_noRT"]
-
-        if start_time:
-            query = {"word": word, "time": {"$gte": start_time}}
-            start = start_time
-        else:
-            query = {"word": word}
-            start = datetime.datetime(2008, 9, 1)
-
-        data = {
-            d: {c: np.nan for c in cols}
-            for d in pd.date_range(
-                start=start.date(), end=datetime.datetime.today().date(), freq="D"
-            ).date
-        }
+        query, data = self.prepare_query(word, start_time)
 
         for i in self.tweets.find(query).collation(
             Collation(locale=self.lang, strength=CollationStrength.SECONDARY)
         ):
             d = i["time"].date()
-            for c, db in zip(cols, db_cols):
+            for c, db in zip(self.cols, self.db_cols):
                 if np.isnan(data[d][c]):
                     data[d][c] = i[db]
                 else:
@@ -204,3 +184,20 @@ class Query:
         df["freq_no_rt"] = df["count_no_rt"] / df["count_no_rt"].sum()
         df.index.name = lang
         return df
+
+    def prepare_query(self, word=None, start_time=None):
+        if start_time:
+            query = {"word": word, "time": {"$gte": start_time}}
+            start = start_time
+        else:
+            query = {"word": word}
+            start = datetime.datetime(2008, 9, 1)
+
+        data = {
+            d: {c: np.nan for c in self.cols}
+            for d in pd.date_range(
+                start=start.date(), end=datetime.datetime.today().date(), freq="D"
+            ).date
+        }
+
+        return query, data

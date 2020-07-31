@@ -16,7 +16,6 @@ types_colors = {
 
 
 fm._rebuild()
-# noto = [f.name for f in fm.fontManager.ttflist if 'Noto Sans' in f.name]
 fonts = {
     "Default": fm.FontProperties(family=["sans-serif"]),
     "Korean": fm.FontProperties(

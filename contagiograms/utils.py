@@ -271,36 +271,16 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                 fontsize=12,
             )
 
+            # plot contagion fraction
             try:
-                # plot contagion fraction
-                try:
-                    idx = np.where((rt - ot) > 0)[0]
-                    if len(idx) > 0:
-                        for d in rt[idx].index:
-                            cax.axvline(d, color=contagion_color, alpha=0.25)
+                idx = np.where((rt - ot) > 0)[0]
+                if len(idx) > 0:
+                    for d in rt[idx].index:
+                        cax.axvline(d, color=contagion_color, alpha=0.25)
+            except IndexError:
+                pass
 
-                except IndexError:
-                    pass
-
-                heatmap = np.zeros((7, rt.shape[0]))
-                for m, month in enumerate(rt.index):
-                    for d, day in enumerate(days):
-                        ds = pd.to_datetime(
-                            pd.date_range(
-                                start=month - pd.DateOffset(months=1),
-                                end=month,
-                                freq=f"W-{day.upper()}",
-                            )
-                            .strftime("%Y-%m-%d")
-                            .tolist()
-                        )
-
-                        heatmap[d, m] = np.mean(alpha.loc[df.index.isin(ds)])
-
-                mesh = langax.pcolormesh(
-                    rt.index, np.arange(8), heatmap, vmin=vmin, vmax=vmax, cmap=cmap,
-                )
-
+            try:
                 langax.invert_yaxis()
                 langax.set_yticks(np.arange(7))
                 langax.set_yticklabels(days, fontsize=8)
@@ -353,7 +333,6 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
 
             except ValueError as e:
                 print(f"Value error for {df.index.name}: {e}.")
-                pass
 
             ax.grid(True, which="both", axis="both", alpha=0.3, lw=1, linestyle="-")
             cax.grid(True, which="both", axis="both", alpha=0.3, lw=1, linestyle="-")
@@ -427,6 +406,23 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                     fontsize=8,
                 )
 
+                heatmap = np.zeros((7, rt.shape[0]))
+                for m, month in enumerate(rt.index):
+                    for d, day in enumerate(days):
+                        ds = pd.to_datetime(
+                            pd.date_range(
+                                start=month - pd.DateOffset(months=1),
+                                end=month,
+                                freq=f"W-{day.upper()}",
+                            )
+                            .strftime("%Y-%m-%d")
+                            .tolist()
+                        )
+
+                        heatmap[d, m] = np.mean(alpha.loc[df.index.isin(ds)])
+                mesh = langax.pcolormesh(
+                    rt.index, np.arange(8), heatmap, vmin=vmin, vmax=vmax, cmap=cmap,
+                )
                 cbarax = inset_axes(
                     langax,
                     width="3%",

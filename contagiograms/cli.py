@@ -9,6 +9,7 @@ import re
 from argparse import ArgumentDefaultsHelpFormatter
 from datetime import datetime
 from operator import attrgetter
+from pathlib import Path
 
 
 class SortedMenu(ArgumentDefaultsHelpFormatter):
@@ -17,7 +18,7 @@ class SortedMenu(ArgumentDefaultsHelpFormatter):
         super(SortedMenu, self).add_arguments(actions)
 
 
-def parser():
+def get_parser():
     return argparse.ArgumentParser(
         formatter_class=SortedMenu,
         description="Contagiograms; Copyright (c) 2020 The Computational Story Lab. Licensed under the MIT License.",
@@ -51,3 +52,44 @@ def valid_date(d):
         return datetime.strptime(d, "%Y-%m-%d")
     except ValueError:
         raise argparse.ArgumentTypeError(f"Invalid date format: '{d}'")
+
+
+def parse_args(args):
+    parser = get_parser()
+
+    parser.add_argument(
+        "-o", "--output", help="path to save figure", default=Path.cwd(),
+    )
+
+    parser.add_argument(
+        "-i", "--input", help="path to an input JSON file", default=None,
+    )
+
+    parser.add_argument(
+        "--flipbook",
+        help="a flag to combine contagiograms PDFs into a single flipbook",
+        action="store_true",
+    )
+
+    parser.add_argument(
+        "--t1",
+        help="time scale to investigate relative social amplification [eg, M, 2M, 6M, Y]",
+        default="1M",
+        type=valid_timescale,
+    )
+
+    parser.add_argument(
+        "--t2",
+        help="window size for smoothing the main timeseries [days]",
+        default=int(30),
+        type=valid_windowsize,
+    )
+
+    parser.add_argument(
+        "--start_date",
+        help="starting date for the query",
+        default=datetime(2010, 1, 1),
+        type=valid_date,
+    )
+
+    return parser.parse_args(args)

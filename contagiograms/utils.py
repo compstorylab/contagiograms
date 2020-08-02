@@ -165,7 +165,7 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
     metric = 'rank'
     labels = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'.split(' ')
     days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    vmin, vmax, vcenter, step = 0, 3, 1, .1
+    vmin, vmax, vcenter, step = 0, 2, 1, .1
     contagion_color = 'orangered'
     rtcmap = plt.get_cmap('OrRd', 256)
     otcmap = plt.get_cmap('Greys_r', 256)
@@ -233,7 +233,7 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
 
             alpha = (
                 (df['count'] - df['count_no_rt']) / df['count']
-            ) / ((df['lang_unique_ngrams'] - df['lang_unique_ngrams_no_rt']) / df['lang_unique_ngrams'])
+            ) / ((df['lang_num_ngrams'] - df['lang_num_ngrams_no_rt']) / df['lang_num_ngrams'])
             alpha = alpha.replace([np.inf, -np.inf, np.nan], 1)
 
             at = df['count'].resample(t1).mean()

@@ -227,4 +227,3 @@ class Query:
         df["freq_no_rt"] = df["count_no_rt"] / df["count_no_rt"].sum()
         df.index.name = lang
         return df
-

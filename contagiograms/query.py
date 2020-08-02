@@ -22,10 +22,19 @@ class Query:
         """
         client = MongoClient(f"mongodb://{username}:{pwd}@hydra.uvm.edu:27017")
         db = client[db]
+
         self.tweets = db[lang]
         self.lang = lang
 
-        self.cols = ["count", "count_no_rt", "rank", "rank_no_rt", "freq", "freq_no_rt"]
+        self.cols = [
+            "count",
+            "count_no_rt",
+            "rank",
+            "rank_no_rt",
+            "freq",
+            "freq_no_rt"
+        ]
+
         self.db_cols = [
             "counts",
             "count_noRT",
@@ -34,6 +43,23 @@ class Query:
             "freq",
             "freq_noRT",
         ]
+
+    def prepare_query(self, word=None, start_time=None):
+        if start_time:
+            query = {"word": word, "time": {"$gte": start_time}}
+            start = start_time
+        else:
+            query = {"word": word}
+            start = datetime.datetime(2008, 9, 1)
+
+        data = {
+            d: {c: np.nan for c in self.cols}
+            for d in pd.date_range(
+                start=start.date(), end=datetime.datetime.today().date(), freq="D"
+            ).date
+        }
+
+        return query, data
 
     def query_timeseries_array(self, word_list=None, start_time=None):
         """Query database for an array n-gram timeseries
@@ -136,23 +162,35 @@ class Query:
         """
         cols = [
             "ft_count",
+            "ft_freq",
+            "ft_rank",
+            "ft_comments",
+            "ft_retweets",
             "ft_speakers",
             "ft_tweets",
-            "ft_retweets",
-            "ft_comments",
-            "ft_rank",
-            "ft_freq",
             "tw_count",
+            "tw_freq",
+            "tw_rank",
+            "tw_comments",
+            "tw_retweets",
             "tw_speakers",
             "tw_tweets",
-            "tw_retweets",
-            "tw_comments",
-            "tw_rank",
-            "tw_freq",
+            "num_1grams",
+            "num_2grams",
+            "num_3grams",
+            "unique_1grams",
+            "unique_2grams",
+            "unique_3grams",
+            "num_1grams_no_rt",
+            "num_2grams_no_rt",
+            "num_3grams_no_rt",
+            "unique_1grams_no_rt",
+            "unique_2grams_no_rt",
+            "unique_3grams_no_rt",
         ]
 
         if start_time:
-            query = {"language": lang, "date": {"$gte": start_time}}
+            query = {"language": lang, "time": {"$gte": start_time}}
             start = start_time
         else:
             query = {"language": lang}
@@ -166,12 +204,15 @@ class Query:
         }
 
         for i in self.tweets.find(query):
-            d = i["date"].date()
+            d = i["time"].date()
             for c in cols:
-                if np.isnan(data[d][c]):
-                    data[d][c] = i[c]
-                else:
-                    data[d][c] += i[c]
+                try:
+                    if np.isnan(data[d][c]):
+                        data[d][c] = i[c]
+                    else:
+                        data[d][c] += i[c]
+                except KeyError:
+                    pass
 
         db_cols = {
             "ft_count": "count",
@@ -187,19 +228,3 @@ class Query:
         df.index.name = lang
         return df
 
-    def prepare_query(self, word=None, start_time=None):
-        if start_time:
-            query = {"word": word, "time": {"$gte": start_time}}
-            start = start_time
-        else:
-            query = {"word": word}
-            start = datetime.datetime(2008, 9, 1)
-
-        data = {
-            d: {c: np.nan for c in self.cols}
-            for d in pd.date_range(
-                start=start.date(), end=datetime.datetime.today().date(), freq="D"
-            ).date
-        }
-
-        return query, data

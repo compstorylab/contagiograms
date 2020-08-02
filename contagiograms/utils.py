@@ -97,8 +97,16 @@ def plot(
 
             q = Query("languages", "languages")
             lang = q.query_languages(lang, start_time=start_date)
+
             d["lang_count"] = lang["count"]
             d["lang_count_no_rt"] = lang["count_no_rt"]
+
+            d[f"lang_num_ngrams"] = lang[f"num_{n}grams"]
+            d[f"lang_num_ngrams_no_rt"] = lang[f"num_{n}grams_no_rt"]
+
+            d[f"lang_unique_ngrams"] = lang[f"unique_{n}grams"]
+            d[f"lang_unique_ngrams_no_rt"] = lang[f"unique_{n}grams_no_rt"]
+
             ngrams.append(d)
 
         plot_contagiograms(
@@ -225,7 +233,7 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
 
             alpha = (
                 (df['count'] - df['count_no_rt']) / df['count']
-            ) / ((df['lang_count'] - df['lang_count_no_rt']) / df['lang_count'])
+            ) / ((df['lang_unique_ngrams'] - df['lang_unique_ngrams_no_rt']) / df['lang_unique_ngrams'])
             alpha = alpha.replace([np.inf, -np.inf, np.nan], 1)
 
             at = df['count'].resample(t1).mean()

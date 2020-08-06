@@ -4,9 +4,9 @@ import logging
 import time
 from pathlib import Path
 
-import cli
-import consts
-import utils
+from contagiograms import cli
+from contagiograms import consts
+from contagiograms import utils
 
 logging.basicConfig(
     stream=sys.stdout,

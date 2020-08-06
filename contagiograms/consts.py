@@ -1,6 +1,5 @@
 
 import re
-
 import matplotlib.font_manager as fm
 
 types_colors = {

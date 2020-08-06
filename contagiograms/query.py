@@ -1,7 +1,5 @@
 
-
 import datetime
-
 import numpy as np
 import pandas as pd
 from pymongo import MongoClient
@@ -55,7 +53,9 @@ class Query:
         data = {
             d: {c: np.nan for c in self.cols}
             for d in pd.date_range(
-                start=start.date(), end=datetime.datetime.today().date(), freq="D"
+                start=start.date(),
+                end=(datetime.datetime.today() - datetime.timedelta(days=2)).date(),
+                freq="D",
             ).date
         }
 
@@ -117,33 +117,6 @@ class Query:
             d = i["time"].date()
             for c, db in zip(self.cols, self.db_cols):
                 data[d][c] = i[db]
-
-        df = pd.DataFrame.from_dict(data=data, orient="index")
-        df.index = pd.to_datetime(df.index)
-        df.index.name = word
-        return df
-
-    def query_insensitive_timeseries(self, word=None, start_time=None):
-        """Query database for n-gram timeseries (case-insensitive)
-
-        Args:
-            word (string): target ngram
-            start_time (datetime): starting date for the query
-
-        Returns (pd.DataFrame):
-            dataframe of count, rank, and frequency over time for an n-gram
-        """
-        query, data = self.prepare_query(word, start_time)
-
-        for i in self.tweets.find(query).collation(
-            Collation(locale=self.lang, strength=CollationStrength.SECONDARY)
-        ):
-            d = i["time"].date()
-            for c, db in zip(self.cols, self.db_cols):
-                if np.isnan(data[d][c]):
-                    data[d][c] = i[db]
-                else:
-                    data[d][c] += i[db]
 
         df = pd.DataFrame.from_dict(data=data, orient="index")
         df.index = pd.to_datetime(df.index)

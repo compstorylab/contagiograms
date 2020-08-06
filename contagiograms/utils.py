@@ -4,21 +4,22 @@ import warnings
 from datetime import datetime
 from pathlib import Path
 
-import consts
 import matplotlib.colors as mcolors
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
-import regexr
 import ujson
 from bidi import algorithm as bidialg
 from matplotlib.lines import Line2D
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from pandas.plotting import register_matplotlib_converters
 from PyPDF2 import PdfFileMerger, PdfFileReader
-from query import Query
+
+from contagiograms import regexr
+from contagiograms import consts
+from contagiograms.query import Query
 
 register_matplotlib_converters()
 warnings.simplefilter("ignore")
@@ -52,7 +53,6 @@ def plot(
     savepath,
     lang_hashtbl=consts.supported_languages,
     nparser=consts.ngrams_parser,
-    case_sensitive=True,
     start_date=datetime(2010, 1, 1),
     t1="1M",
     t2=30,
@@ -64,7 +64,6 @@ def plot(
         savepath: path to save generated plot
         lang_hashtbl: a list of languages and their corresponding codes in both FastText and Twitter
         nparser: compiled ngram parser
-        case_sensitive: a toggle for case_sensitive lookups
         start_date: starting date for the query
         t1: time scale to investigate relative social amplification [eg, M, 2M, 6M, Y]
         t2: window size for smoothing the main timeseries [days]
@@ -79,15 +78,11 @@ def plot(
     for key, listt in grams.items():
         ngrams = []
         for i, (w, lang) in enumerate(listt[:12]):
-            n = len(regexr.ngrams(w, parser=nparser, n=1))
+            n = len(regexr.nparser(w, parser=nparser, n=1))
             logger.info(f"Retrieving {lang_hashtbl.get(lang)}: {n}gram -- '{w}'")
 
             q = Query(f"{n}grams", lang)
-
-            if case_sensitive:
-                d = q.query_timeseries(w, start_time=start_date)
-            else:
-                d = q.query_insensitive_timeseries(w, start_time=start_date)
+            d = q.query_timeseries(w, start_time=start_date)
 
             d.index.name = (
                 f"{lang_hashtbl.get(lang)}\n'{w}'"
@@ -182,13 +177,15 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
     end_date = ngrams[0].index[-1]
     diff = end_date - start_date
 
-    if diff.days < 365:
-        date_format = '%m\n%Y'
-        major_locator = mdates.MonthLocator(range(1, int(np.ceil(diff.days/30) + 1)))
+    if diff.days < 1000:
+        major_format = '%b\n%Y'
+        minor_format = '%b'
+        major_locator = mdates.YearLocator()
         minor_locator = mdates.AutoDateLocator()
 
     else:
-        date_format = '%Y'
+        major_format = '%Y'
+        minor_format = ''
         major_locator = mdates.YearLocator(2)
         minor_locator = mdates.YearLocator()
 
@@ -211,16 +208,19 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
             langax.set_xlim(start_date, end_date)
 
             ax.xaxis.set_major_locator(major_locator)
-            ax.xaxis.set_major_formatter(mdates.DateFormatter(date_format))
+            ax.xaxis.set_major_formatter(mdates.DateFormatter(major_format))
             ax.xaxis.set_minor_locator(minor_locator)
+            ax.xaxis.set_minor_formatter(mdates.DateFormatter(minor_format))
 
             cax.xaxis.set_major_locator(major_locator)
-            cax.xaxis.set_major_formatter(mdates.DateFormatter(date_format))
+            cax.xaxis.set_major_formatter(mdates.DateFormatter(major_format))
             cax.xaxis.set_minor_locator(minor_locator)
+            cax.xaxis.set_minor_formatter(mdates.DateFormatter(minor_format))
 
             langax.xaxis.set_major_locator(major_locator)
-            langax.xaxis.set_major_formatter(mdates.DateFormatter(date_format))
+            langax.xaxis.set_major_formatter(mdates.DateFormatter(major_format))
             langax.xaxis.set_minor_locator(minor_locator)
+            langax.xaxis.set_minor_formatter(mdates.DateFormatter(minor_format))
 
             df['count'] = df['count'].fillna(0)
             df['count_no_rt'] = df['count_no_rt'].fillna(0)
@@ -274,14 +274,12 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
 
             try:
                 # plot contagion fraction
-                try:
-                    idx = np.where((rt - ot) > 0)[0]
-                    if len(idx) > 0:
-                        for d in rt[idx].index:
-                            cax.axvline(d, color=contagion_color, alpha=.25)
-
-                except IndexError:
-                    pass
+                cax.fill_between(
+                    rt.index, 0, 1,
+                    where=(rt/at) >= .5,
+                    facecolor=contagion_color,
+                    alpha=.2
+                )
 
                 heatmap = np.zeros((7, rt.shape[0]))
                 for m, month in enumerate(rt.index):

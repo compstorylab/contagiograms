@@ -1,4 +1,3 @@
-
 import html
 import re
 from collections import Counter
@@ -45,7 +44,7 @@ def ngram_parser(text, ngram_parser):
     return [x[0] for x in ngram_parser.findall(text) if x[0] != ""]
 
 
-def ngrams(s, parser, n=1):
+def nparser(s, parser, n=1):
     """ Concatenate tokens into ngrams
     Args:
         s: a string object

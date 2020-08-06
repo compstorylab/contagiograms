@@ -1,6 +1,6 @@
 
-import argparse
 import re
+import argparse
 from argparse import ArgumentDefaultsHelpFormatter
 from datetime import datetime
 from operator import attrgetter
@@ -22,7 +22,7 @@ def get_parser():
 
 def valid_timescale(t):
     try:
-        match = re.match("[1-9][M,Y]", t)
+        match = re.match("[1-9][W,M,Y]", t)
         if match:
             return t
         else:

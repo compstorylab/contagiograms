@@ -17,9 +17,15 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from pandas.plotting import register_matplotlib_converters
 from PyPDF2 import PdfFileMerger, PdfFileReader
 
-from contagiograms import regexr
-from contagiograms import consts
-from contagiograms.query import Query
+try:
+    from contagiograms import regexr
+    from contagiograms import consts
+    from contagiograms.query import Query
+except ImportError:
+    import regexr
+    import consts
+    from query import Query
+
 
 register_matplotlib_converters()
 warnings.simplefilter("ignore")

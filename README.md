@@ -1,4 +1,4 @@
-![contagiograms](tests/2020-07-31_contagiograms_test4.png)
+![contagiograms](tests/2020-08-06_contagiograms_test4.png)
 
 
 # Contagiograms 
@@ -9,7 +9,7 @@ As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) pr
 
 With these expanded time series visualizations, we convey the degree to which an n-gram τ is retweeted both overall and relative to the background level of retweeting for a given language ℓ. We show both rates as retweet rates change strongly over time and variably so across languages.
 
-<img src="tests/2020-07-31_contagiograms_test1.png" alt="contagiograms" style="zoom:50%;" />
+<img src="tests/2020-08-06_contagiograms_test1.png" alt="contagiograms" style="zoom:50%;" />
 
 Each contagiogram has three panels. The main panel at the bottom charts, as before, the rank time series for a given n-gram. For contagiograms running over a decade, we show rank time series in this main panel with month-scale smoothing (black line), and add a background shading in gray indicating the highest and lowest rank of each week.
 
@@ -38,16 +38,9 @@ You can install the latest verion by cloning the repo and running [setup.py](set
 
 ```shell 
 git clone https://gitlab.com/compstorylab/contagiograms.git
+cd contagiograms
 python setup.py install 
 ```
-
-
-Alternatively, you can use Anaconda to install our package.
-```shell
-conda env create -q -f requirements.yml
-```
-
-This will create a new conda environment (``contagiograms``) with all required dependencies. 
 
 
 ### Install Development Version
@@ -56,6 +49,14 @@ This will create a new conda environment (``contagiograms``) with all required d
 git clone https://gitlab.com/compstorylab/contagiograms.git
 cd contagiograms
 pip install -e .
+```
+
+### Anaconda
+
+This will create a new conda environment (``contagiograms``) with all required dependencies. 
+
+```shell
+conda env create -q -f requirements.yml
 ```
 
 ## Usage
@@ -77,7 +78,7 @@ Optional arguments:
   --flipbook            a flag to combine contagiograms PDFs into a single flipbook (default: False)
   --start_date START_DATE
                         starting date for the query (default: 2010-01-01)
-  --t1 T1               time scale to investigate relative social amplification [eg, M, 2M, 6M, Y] (default: 1M)
+  --t1 T1               time scale to investigate relative social amplification [eg, 1W, 1M, 2M, 6M, 1Y] (default: 1M)
   --t2 T2               window size for smoothing the main timeseries [days] (default: 30)
 ```
 
@@ -150,8 +151,7 @@ cg.plot(ngrams, 'tests/')
 cg.plot(
     'tests/test.json', 
     savepath='tests/',
-    case_sensitive=True,
-    start_date=datetime(2010, 1, 1)
+    start_date=datetime(2010, 1, 1),
 )
 
 # combine PDFs into a single flipbook

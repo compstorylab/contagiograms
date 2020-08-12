@@ -85,7 +85,7 @@ def plot(
             grams = ujson.load(data)
 
     parser = pickle.load(pkg_resources.open_binary(resources, 'ngrams.bin'))
-    supported_languages = ujson.load(pkg_resources.open_text(resources, 'supported_languages.json'))
+    supported_languages = ujson.load(pkg_resources.open_binary(resources, 'supported_languages.json'))
 
     for key, listt in grams.items():
         ngrams = []

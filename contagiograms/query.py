@@ -60,46 +60,6 @@ class Query:
 
         return query, data
 
-    def query_timeseries_array(self, word_list=None, start_time=None):
-        """Query database for an array n-gram timeseries
-
-        Args:
-            word_list (list): list of strings to query mongo
-            start_time (datetime): starting date for query
-
-        Returns (pd.DataFrame):
-            d_df dataframe of count, rank, and frequency over time for list of n-grams
-        """
-        db_cols = {
-            "counts": "count",
-            "count_noRT": "count_no_rt",
-            "rank": "rank",
-            "rank_noRT": "rank_no_rt",
-            "freq": "freq",
-            "freq_noRT": "freq_no_rt",
-            "word": "word",
-        }
-
-        if start_time:
-            query = {"word": {"$in": word_list}, "time": {"$gte": start_time}}
-        else:
-            query = {
-                "word": {"$in": word_list},
-                "time": {"$gte": datetime.datetime(2008, 9, 1)},
-            }
-
-        df = pd.DataFrame(list(self.tweets.find(query)))
-        df.set_index("word", inplace=True, drop=False)
-
-        tl_df = pd.DataFrame(word_list)
-        tl_df.set_index(0, inplace=True)
-
-        df = tl_df.join(df)
-        df["word"] = df.index
-        df.drop("_id", axis=1, inplace=True)
-        df.rename(columns=db_cols, inplace=True)
-        return df
-
     def query_timeseries(self, word=None, start_time=None):
         """Query database for n-gram timeseries
 

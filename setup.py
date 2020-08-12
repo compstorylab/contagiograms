@@ -1,5 +1,5 @@
 
-import setuptools
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 with open("requirements.txt") as f:
     libs = f.read().splitlines()
 
-setuptools.setup(
+setup(
     name="contagiograms",
     version="1.0.0",
     description="An instrument to approximate the daily usage of ngrams along with their popularity on Twitter.",
@@ -17,7 +17,8 @@ setuptools.setup(
     url="https://gitlab.com/compstorylab/contagiograms",
     author="Thayer Alshaabi",
     author_email="thayer.alshaabi@uvm.edu",
-    packages=setuptools.find_packages(),
+    packages=find_packages(),
+    package_data={'contagiograms': ['resources/*.bin', 'resources/*.csv', 'resources/*.json']},
     python_requires=">=3.6",
     install_requires=libs,
     license="MIT",

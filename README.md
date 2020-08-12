@@ -1,4 +1,4 @@
-![contagiograms](tests/2020-08-06_contagiograms_test4.png)
+![contagiograms](resources/ex1.png)
 
 
 # Contagiograms 
@@ -9,7 +9,7 @@ As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) pr
 
 With these expanded time series visualizations, we convey the degree to which an n-gram τ is retweeted both overall and relative to the background level of retweeting for a given language ℓ. We show both rates as retweet rates change strongly over time and variably so across languages.
 
-<img src="tests/2020-08-06_contagiograms_test1.png" alt="contagiograms" style="zoom:50%;" />
+<img src="resources/ex2.png" alt="contagiograms" style="zoom:50%;" />
 
 Each contagiogram has three panels. The main panel at the bottom charts, as before, the rank time series for a given n-gram. For contagiograms running over a decade, we show rank time series in this main panel with month-scale smoothing (black line), and add a background shading in gray indicating the highest and lowest rank of each week.
 
@@ -18,16 +18,18 @@ The top two panels of each contagiogram capture the raw and relative social ampl
 First, the top panel displays the raw R<sub>τ,t,ℓ</sub> balance, the monthly relative volumes of each n-gram in retweets (RT, orange) and organic tweets (OT, blue):
 
 <div align="center">
-    <img src="eq1.svg" alt="Eq1" style="zoom:150%;" />
+    <img src="resources/eq1.svg" alt="Eq1" style="zoom:150%;" />
 </div>
+
 
 When the balance of appearances in retweets outweighs those in organic tweets, R<sub>τ,t,ℓ</sub> > 0.5, we view the n-gram as nominally being amplified, and we add a solid background for emphasis.
 
 Second, in the middle panel of each contagiogram, we display a heatmap of the values of the relative amplification rate for n-gram τ in language ℓ, R<sup>rel</sup><sub>τ,t,ℓ</sub>, over time. Building on from the R<sub>τ,t,ℓ</sub> balance, we define R<sup>rel</sup><sub>τ,t,ℓ</sub> as:
 
 <div align="center">
-        <img src="eq2.svg" alt="Eq2" style="zoom:150%;" />
+        <img src="resources/eq2.svg" alt="Eq2" style="zoom:150%;" />
 </div>
+
 
 where the denominator gives the overall fraction of n-grams that are found in retweets on day t for language ℓ. While still averaging at month scales, we now do so based on day of the week. Shades of red indicate that the relative volume of n-gram τ is being socially amplified over the baseline of retweets in language ℓ, R<sup>rel</sup><sub>τ,t,ℓ</sub> > 1, while gray encodes the opposite, R<sup>rel</sup><sub>τ,t,ℓ</sub> < 1.
 
@@ -129,8 +131,8 @@ python contagiograms/contagiograms.py --flipbook -i tests/test.json -o tests/
 ### Python module
 
 ```python
+import contagiograms
 from datetime import datetime
-from contagiograms import utils as cg
 
 ngrams = {
     "test1": [
@@ -145,16 +147,16 @@ ngrams = {
     ]
 }
 
-cg.plot(ngrams, 'tests/')
+contagiograms.plot(ngrams, 'tests/')
 
 # or using a JSON file 
-cg.plot(
+contagiograms.plot(
     'tests/test.json', 
     savepath='tests/',
     start_date=datetime(2010, 1, 1),
 )
 
 # combine PDFs into a single flipbook
-cg.flipbook(savepath='.', datapath='tests/')
+contagiograms.flipbook(savepath='.', datapath='tests/')
 ```
 

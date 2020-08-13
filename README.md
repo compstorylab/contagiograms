@@ -160,3 +160,8 @@ contagiograms.plot(
 contagiograms.flipbook(savepath='.', datapath='tests/')
 ```
 
+## Citation
+See the following paper for more details, and please cite it if you use them in your work:
+
+> Alshaabi, T., Adams, J.L., Arnold, M.V., Minot, J.R., Dewhurst, D.R., Reagan, A.J., Danforth, C.M. and Dodds, P.S., 2020. [Storywrangler: A massive exploratorium for sociolinguistic, cultural, socioeconomic, and political timelines using Twitter](https://arxiv.org/abs/2007.12988). *arXiv preprint arXiv:2007.12988*.
+

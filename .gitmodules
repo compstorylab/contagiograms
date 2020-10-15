@@ -1,0 +1,3 @@
+[submodule "storywrangling"]
+	path = storywrangling
+	url = https://gitlab.com/compstorylab/storywrangling.git

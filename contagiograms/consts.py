@@ -16,7 +16,7 @@ fonts = {
     "Tamil": fm.FontProperties(family=["Noto Sans Tamil", "sans-serif"]),
 }
 
-contagiograms = dict(
+examples = dict(
     example=[
         ("kevät", "fi"),
         ("Carnaval", "pt"),

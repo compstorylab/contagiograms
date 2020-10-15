@@ -18,16 +18,14 @@ except ImportError:
 import logging
 import time
 import ujson
-import pickle
 from datetime import datetime
 from PyPDF2 import PdfFileMerger, PdfFileReader
 
-import resources
-import contagiograms.consts
-from contagiograms.query import Query
-from contagiograms.regexr import nparser
+from storywrangling import Storywrangler
+from storywrangling.regexr import nparser
 from contagiograms.cli import parse_args
 from contagiograms.utils import plot_contagiograms
+from contagiograms.consts import examples
 
 __all__ = ["plot", "flipbook", ]
 
@@ -84,26 +82,15 @@ def plot(
         with open(grams, "r") as data:
             grams = ujson.load(data)
 
-    parser = pickle.load(pkg_resources.open_binary(resources, 'ngrams.bin'))
-    supported_languages = ujson.load(pkg_resources.open_binary(resources, 'supported_languages.json'))
+    storywrangler = Storywrangler()
 
     for key, listt in grams.items():
         ngrams = []
-        for i, (w, lang) in enumerate(listt[:12]):
-            n = len(nparser(w, parser=parser, n=1))
-            logging.info(f"Retrieving {supported_languages.get(lang)}: {n}gram -- '{w}'")
+        for i, (w, ll) in enumerate(listt[:12]):
 
-            q = Query(f"{n}grams", lang)
-            d = q.query_timeseries(w, start_time=start_date)
-
-            d.index.name = (
-                f"{supported_languages.get(lang)}\n'{w}'"
-                if supported_languages.get(lang) is not None
-                else f"All\n'{w}'"
-            )
-
-            q = Query("languages", "languages")
-            lang = q.query_languages(lang, start_time=start_date)
+            n = len(nparser(w, parser=storywrangler.parser, n=1))
+            d = storywrangler.get_ngram(w, lang=ll, start_time=start_date)
+            lang = storywrangler.get_lang(ll, start_time=start_date)
 
             d["lang_count"] = lang["count"]
             d["lang_count_no_rt"] = lang["count_no_rt"]
@@ -113,6 +100,12 @@ def plot(
 
             d[f"lang_unique_ngrams"] = lang[f"unique_{n}grams"]
             d[f"lang_unique_ngrams_no_rt"] = lang[f"unique_{n}grams_no_rt"]
+
+            d.index.name = (
+                f"{storywrangler.supported_languages.get(ll)}\n'{w}'"
+                if storywrangler.supported_languages.get(ll) is not None
+                else f"All\n'{w}'"
+            )
 
             ngrams.append(d)
 
@@ -135,7 +128,7 @@ def main(args=None):
     args = parse_args(args)
 
     plot(
-        contagiograms.consts.contagiograms if args.input is None else Path(args.input),
+        examples if args.input is None else Path(args.input),
         savepath=Path(args.output),
         start_date=args.start_date,
         t1=args.t1,

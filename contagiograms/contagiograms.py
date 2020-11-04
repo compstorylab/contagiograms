@@ -46,7 +46,7 @@ def flipbook(savepath, datapath):
     pdf = PdfFileMerger()
     datapath = Path(datapath)
 
-    for f in datapath.rglob("*.pdf"):
+    for f in sorted(datapath.rglob("*.pdf")):
         logging.info(f)
         pdf.append(PdfFileReader(str(f), "rb"))
 

@@ -39,7 +39,7 @@ where the denominator gives the overall fraction of n-grams that are found in re
 You can install the latest verion by cloning the repo and running [setup.py](setup.py) script in your terminal
 
 ```shell 
-git clone https://gitlab.com/compstorylab/contagiograms.git
+git clone --recursive https://gitlab.com/compstorylab/contagiograms.git
 cd contagiograms
 python setup.py install 
 ```
@@ -48,17 +48,9 @@ python setup.py install
 ### Install Development Version
 
 ```shell
-git clone https://gitlab.com/compstorylab/contagiograms.git
+git clone --recursive https://gitlab.com/compstorylab/contagiograms.git
 cd contagiograms
 pip install -e .
-```
-
-### Anaconda
-
-This will create a new conda environment (``contagiograms``) with all required dependencies. 
-
-```shell
-conda env create -q -f requirements.yml
 ```
 
 ## Usage

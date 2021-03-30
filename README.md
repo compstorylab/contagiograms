@@ -28,7 +28,7 @@ that can be configured to several time resolutions
 The top two panels of each contagiogram capture 
 the raw and relative social amplification for each n-gram. 
 While still displaying values at the day scale, 
-we also choose to go with month-scale smoothing for these panels by default. 
+we also choose to go with month-scale moving average for these panels by default. 
 They, however, 
 have their own smoothing scale as a tunable parameter **t<sub>1</sub>**
 that can be further configured to either monthly or weekly. 

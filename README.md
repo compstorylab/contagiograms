@@ -3,35 +3,84 @@
 
 # Contagiograms 
 
-As part of our [StoryWrangler](https://gitlab.com/compstorylab/storywrangler) project, we present a Python package for visualizing contagiograms.
+As part of our [Storywrangler](https://gitlab.com/compstorylab/storywrangler) project, 
+we present a Python package for visualizing contagiograms.
 
 ## Description 
 
-With these expanded time series visualizations, we convey the degree to which an n-gram τ is retweeted both overall and relative to the background level of retweeting for a given language ℓ. We show both rates as retweet rates change strongly over time and variably so across languages.
+With these expanded time series visualizations, 
+we convey the degree to which an n-gram τ is retweeted 
+both overall and relative to the background level of retweeting for a given language ℓ. 
+We show both rates as retweet rates change strongly over time and variably so across languages.
 
 <img src="resources/ex2.png" alt="contagiograms" style="zoom:50%;" />
 
-Each contagiogram has three panels. The main panel at the bottom charts, as before, the rank time series for a given n-gram. For contagiograms running over a decade, we show rank time series in this main panel with month-scale smoothing (black line), and add a background shading in gray indicating the highest and lowest rank of each week.
+Each contagiogram has three panels. 
+The main panel at the bottom shows the rank time series for a given n-gram. 
+For contagiograms running over a decade, 
+we show rank time series in this main panel at the day scale with month-scale smoothing (black line), 
+and add a background shading in gray showing the highest and lowest rank of each week. 
+The smoothing scale for the main time series is a tunable parameter **t<sub>2</sub>**
+that can be configured to several time resolutions 
+(e.g., daily, weekly, and monthly).
 
-The top two panels of each contagiogram capture the raw and relative social amplification for each n-gram.
 
-First, the top panel displays the raw R<sub>τ,t,ℓ</sub> balance, the monthly relative volumes of each n-gram in retweets (RT, orange) and organic tweets (OT, blue):
+The top two panels of each contagiogram capture 
+the raw and relative social amplification for each n-gram. 
+While still displaying values at the day scale, 
+we also choose to go with month-scale smoothing for these panels by default. 
+They, however, 
+have their own smoothing scale as a tunable parameter **t<sub>1</sub>**
+that can be further configured to either monthly or weekly. 
+
+
+First, the top panel displays the raw R<sub>τ,t,ℓ</sub> balance, 
+the monthly relative volumes of each n-gram in retweets (RT, orange) and organic tweets (OT, blue):
 
 <div align="center">
     <img src="resources/eq1.svg" alt="Eq1" style="zoom:150%;" />
 </div>
 
 
-When the balance of appearances in retweets outweighs those in organic tweets, R<sub>τ,t,ℓ</sub> > 0.5, we view the n-gram as nominally being amplified, and we add a solid background for emphasis.
+When the balance of appearances in retweets outweighs those in organic tweets, R<sub>τ,t,ℓ</sub> > 0.5, 
+we view the n-gram as nominally being amplified, and we add a solid background for emphasis.
 
-Second, in the middle panel of each contagiogram, we display a heatmap of the values of the relative amplification rate for n-gram τ in language ℓ, R<sup>rel</sup><sub>τ,t,ℓ</sub>, over time. Building on from the R<sub>τ,t,ℓ</sub> balance, we define R<sup>rel</sup><sub>τ,t,ℓ</sub> as:
+Second, in the middle panel of each contagiogram, 
+we display a heatmap of the values of the relative amplification rate for n-gram τ in language ℓ, 
+R<sup>rel</sup><sub>τ,t,ℓ</sub>, over time. 
+Building on from the R<sub>τ,t,ℓ</sub> balance, 
+we define R<sup>rel</sup><sub>τ,t,ℓ</sub> as:
 
 <div align="center">
         <img src="resources/eq2.svg" alt="Eq2" style="zoom:150%;" />
 </div>
 
 
-where the denominator gives the overall fraction of n-grams that are found in retweets on day t for language ℓ. While still averaging at month scales, we now do so based on day of the week. Shades of red indicate that the relative volume of n-gram τ is being socially amplified over the baseline of retweets in language ℓ, R<sup>rel</sup><sub>τ,t,ℓ</sub> > 1, while gray encodes the opposite, R<sup>rel</sup><sub>τ,t,ℓ</sub> < 1.
+where the denominator gives the overall fraction of n-grams that are found in retweets on day t for language ℓ. 
+
+When **t<sub>1</sub>** is set to monthly smoothing 
+(i.e., t<sub>1</sub> = 1M),
+we compute the average R<sup>rel</sup><sub>τ,t,ℓ</sub>
+based on the day of the week. 
+Each row displays a given day of the week starting from Monday through Sunday. 
+Each cell of the first row now displays the average values of all Mondays of each month. 
+If the smoothing for the top panels is set to weekly resolution 
+(i.e., t<sub>1</sub> = 1W), 
+each cell will display 
+R<sup>rel</sup><sub>τ,t,ℓ</sub>
+based on the day of the week. 
+Shades of red indicate that the relative volume of n-gram τ 
+is being socially amplified over the baseline of retweets in language ℓ, 
+R<sup>rel</sup><sub>τ,t,ℓ</sub> > 1, 
+while gray encodes the opposite, 
+R<sup>rel</sup><sub>τ,t,ℓ</sub> < 1.
+
+
+<img src="resources/configs.png" alt="configs" style="zoom:50%;" />
+
+
+We show three examples with various smoothing configurations in the figure provided above. 
+
 
 
 ## Installation
@@ -50,7 +99,7 @@ python setup.py install
 ```shell
 git clone --recursive https://gitlab.com/compstorylab/contagiograms.git
 cd contagiograms
-pip install -e .
+python setup.py develop
 ```
 
 ## Usage

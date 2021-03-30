@@ -18,7 +18,7 @@ We show both rates as retweet rates change strongly over time and variably so ac
 Each contagiogram has three panels. 
 The main panel at the bottom shows the rank time series for a given n-gram. 
 For contagiograms running over a decade, 
-we show rank time series in this main panel at the day scale with month-scale smoothing (black line), 
+we show rank time series in this main panel with month-scale smoothing (black line) of the daily values, 
 and add a background shading in gray showing the highest and lowest rank of each week. 
 The smoothing scale for the main time series is a tunable parameter **t<sub>2</sub>**
 that can be configured to several time resolutions 

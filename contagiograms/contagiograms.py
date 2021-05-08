@@ -66,6 +66,7 @@ def plot(
     start_date=datetime(2010, 1, 1),
     t1="1M",
     t2=30,
+    day_of_the_week=True
 ):
     """ Plot a grid of contagiograms
 
@@ -75,6 +76,7 @@ def plot(
         start_date: starting date for the query
         t1: time scale to investigate relative social amplification [eg, M, 2M, 6M, Y]
         t2: window size for smoothing the main timeseries [days]
+        day_of_the_week: a toggle to display r_rel by day of the week
     """
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
@@ -115,8 +117,8 @@ def plot(
             ngrams,
             t1=t1,
             t2=t2,
-            shading=True,
             fullpage=True if len(ngrams) > 6 else False,
+            day_of_the_week=day_of_the_week,
         )
         logging.info(
             f"Saved: {savepath}/{datetime.date(datetime.now())}_contagiograms_{key}"
@@ -134,6 +136,7 @@ def main(args=None):
         start_date=args.start_date,
         t1=args.t1,
         t2=args.t2,
+        day_of_the_week=args.day_of_the_week
     )
 
     if args.flipbook:

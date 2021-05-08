@@ -19,7 +19,7 @@ warnings.simplefilter("ignore")
 logger = logging.getLogger(__name__)
 
 
-def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
+def plot_contagiograms(savepath, ngrams, t1, t2, fullpage, day_of_the_week):
     """ Plot a grid of contagiograms
 
     Args:
@@ -27,9 +27,8 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
         ngrams: a 2D-list of ngrams to plot
         t1: time scale to investigate relative social amplification [eg, M, 2M, 6M, Y]
         t2: window size for smoothing the main timeseries [days]
-        shading: a toggle to either shade the area between the min and max or plot individual lines
         fullpage: a toggle to switch to 3 columns instead of 2
-        saves a figure to {savepath}
+        day_of_the_week: a toggle to display r_rel by day of the week
     """
 
     plt.rcParams.update({
@@ -79,7 +78,13 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
     end_date = ngrams[0].index[-1]
     diff = end_date - start_date
 
-    if diff.days < 1000:
+    if diff.days < 365:
+        major_format = '%b\n%Y'
+        minor_format = '%d\n%b'
+        major_locator = mdates.YearLocator()
+        minor_locator = mdates.AutoDateLocator()
+
+    elif diff.days < 1000:
         major_format = '%b\n%Y'
         minor_format = '%b'
         major_locator = mdates.YearLocator()
@@ -95,7 +100,7 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
     for r in np.arange(0, rows, step=size+1):
         for c in np.arange(cols):
             cax = fig.add_subplot(gs[r, c])
-            langax = fig.add_subplot(gs[r+1:r+3, c])
+            heatmapax = fig.add_subplot(gs[r+1:r+3, c])
             ax = fig.add_subplot(gs[r+3:r+size, c])
 
             df = ngrams[i]
@@ -107,7 +112,7 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
 
             ax.set_xlim(start_date, end_date)
             cax.set_xlim(start_date, end_date)
-            langax.set_xlim(start_date, end_date)
+            heatmapax.set_xlim(start_date, end_date)
 
             ax.xaxis.set_major_locator(major_locator)
             ax.xaxis.set_major_formatter(mdates.DateFormatter(major_format))
@@ -119,10 +124,10 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
             cax.xaxis.set_minor_locator(minor_locator)
             cax.xaxis.set_minor_formatter(mdates.DateFormatter(minor_format))
 
-            langax.xaxis.set_major_locator(major_locator)
-            langax.xaxis.set_major_formatter(mdates.DateFormatter(major_format))
-            langax.xaxis.set_minor_locator(minor_locator)
-            langax.xaxis.set_minor_formatter(mdates.DateFormatter(minor_format))
+            heatmapax.xaxis.set_major_locator(major_locator)
+            heatmapax.xaxis.set_major_formatter(mdates.DateFormatter(major_format))
+            heatmapax.xaxis.set_minor_locator(minor_locator)
+            heatmapax.xaxis.set_minor_formatter(mdates.DateFormatter(minor_format))
 
             df['count'] = df['count'].fillna(0)
             df['count_no_rt'] = df['count_no_rt'].fillna(0)
@@ -133,10 +138,10 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
             df['rank'] = df['rank'].fillna(maxr)
             df['rank_no_rt'] = df['rank_no_rt'].fillna(maxr)
 
-            alpha = (
-                (df['count'] - df['count_no_rt']) / df['count']
-            ) / ((df['lang_num_ngrams'] - df['lang_num_ngrams_no_rt']) / df['lang_num_ngrams'])
-            alpha = alpha.replace([np.inf, -np.inf, np.nan], 1)
+            rt_ratio = (df['count'] - df['count_no_rt']) / df['count']
+            lang_ratio = (df['lang_num_ngrams'] - df['lang_num_ngrams_no_rt']) / df['lang_num_ngrams']
+            r_rel = rt_ratio / lang_ratio
+            r_rel = r_rel.replace([np.inf, -np.inf, np.nan], 1)
 
             at = df['count'].resample(t1).mean()
             ot = df['count_no_rt'].resample(t1).mean()
@@ -183,33 +188,6 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                     alpha=.2
                 )
 
-                heatmap = np.zeros((7, rt.shape[0]))
-                for m, month in enumerate(rt.index):
-                    for d, day in enumerate(days):
-                        ds = pd.to_datetime(pd.date_range(
-                            start=month - pd.DateOffset(months=1),
-                            end=month,
-                            freq=f'W-{day.upper()}'
-                        ).strftime('%Y-%m-%d').tolist())
-
-                        heatmap[d, m] = np.mean(alpha.loc[df.index.isin(ds)])
-
-                mesh = langax.pcolormesh(
-                    rt.index,
-                    np.arange(8),
-                    heatmap,
-                    vmin=vmin,
-                    vmax=vmax,
-                    cmap=cmap,
-                )
-
-                langax.invert_yaxis()
-                langax.set_yticks(np.arange(7))
-                langax.set_yticklabels(days, fontsize=8)
-
-                langax.set_xticklabels([], minor=False)
-                langax.set_xticklabels([], minor=True)
-
                 cax.plot(
                     ot / at,
                     lw=1,
@@ -236,25 +214,12 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                     mec='k',
                 )
 
-                # plot timeseries
-                if shading:
-                    ts = df[metric].resample('W')
-                    ax.fill_between(
-                        ts.mean().index,
-                        y1=ts.max(),
-                        y2=ts.min(),
-                        color='lightgrey',
-                        facecolor='lightgrey',
-                        edgecolor='lightgrey',
-                        zorder=0,
-                    )
-                else:
-                    ax.plot(
-                        df[metric],
-                        color='lightgrey',
-                        lw=1,
-                        zorder=0,
-                    )
+                ax.plot(
+                    df[metric],
+                    color='lightgrey',
+                    lw=1,
+                    zorder=0,
+                )
 
                 ax.plot(
                     df[metric].rolling(t2, center=True).mean(),
@@ -262,13 +227,52 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                     lw=1,
                 )
 
+                if day_of_the_week:
+                    heatmap = np.zeros((7, rt.shape[0]))
+                    for m, month in enumerate(rt.index):
+                        for d, day in enumerate(days):
+                            ds = pd.to_datetime(pd.date_range(
+                                start=month - pd.DateOffset(months=1),
+                                end=month,
+                                freq=f'W-{day.upper()}'
+                            ).strftime('%Y-%m-%d').tolist())
+
+                            heatmap[d, m] = np.mean(r_rel.loc[df.index.isin(ds)])
+
+                    mesh = heatmapax.pcolormesh(
+                        rt.index,
+                        np.arange(8),
+                        heatmap,
+                        vmin=vmin,
+                        vmax=vmax,
+                        cmap=cmap,
+                    )
+
+                    heatmapax.invert_yaxis()
+                    heatmapax.set_yticks(np.arange(7))
+                    heatmapax.set_yticklabels(days, va="top", fontsize=8)
+                    heatmapax.tick_params(axis='y', which='both', length=0)
+
+                else:
+                    r_rel = r_rel.resample(t1).mean().values.reshape(1, -1)
+                    mesh = heatmapax.pcolormesh(
+                        rt.index,
+                        np.arange(2),
+                        r_rel,
+                        vmin=vmin,
+                        vmax=vmax,
+                        cmap=cmap,
+                    )
+                    heatmapax.set_yticks([0, 1])
+                    heatmapax.set_yticklabels([])
+
             except ValueError as e:
                 logger.warning(f'Value error for {df.index.name}: {e}.')
 
             ax.grid(True, which="both", axis='both', alpha=.3, lw=1, linestyle='-')
             cax.grid(True, which="both", axis='both', alpha=.3, lw=1, linestyle='-')
-            langax.grid(True, which="both", axis='x', alpha=.3, lw=1, linestyle='-')
-            langax.grid(True, which="major", axis='y', alpha=1, lw=1, linestyle='-', color='k')
+            heatmapax.grid(True, which="both", axis='x', alpha=.3, lw=1, linestyle='-')
+            heatmapax.grid(True, which="major", axis='y', alpha=1, lw=1, linestyle='-', color='k')
 
             cax.set_xticklabels([], minor=False)
             cax.set_xticklabels([], minor=True)
@@ -302,12 +306,12 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
             ax.spines['left'].set_visible(False)
             ax.spines['top'].set_visible(False)
 
-            langax.spines['top'].set_visible(False)
-            langax.spines['right'].set_visible(False)
-            langax.spines['left'].set_visible(False)
-            langax.spines['bottom'].set_visible(False)
-            langax.tick_params(axis='y', which='both', length=0)
-            langax.set_yticklabels(days, va="top")
+            heatmapax.spines['top'].set_visible(False)
+            heatmapax.spines['right'].set_visible(False)
+            heatmapax.spines['left'].set_visible(False)
+            heatmapax.spines['bottom'].set_visible(False)
+            heatmapax.set_xticklabels([], minor=False)
+            heatmapax.set_xticklabels([], minor=True)
 
             if cols > 1:
                 cax.annotate(
@@ -329,11 +333,11 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
                 )
 
                 cbarax = inset_axes(
-                    langax,
+                    heatmapax,
                     width="3%",
                     height="100%",
                     bbox_to_anchor=(.075, .1, 1, 1),
-                    bbox_transform=langax.transAxes,
+                    bbox_transform=heatmapax.transAxes,
                 )
                 plt.colorbar(
                     mesh,
@@ -348,10 +352,10 @@ def plot_contagiograms(savepath, ngrams, t1, t2, shading, fullpage):
 
             if c == 0:
                 x = -.22
-                langax.text(
+                heatmapax.text(
                     x, 0.5, r"$R^{\mathsf{rel}}_{\tau,t,\ell}$",
                     ha='center', fontsize=14,
-                    verticalalignment='center', transform=langax.transAxes
+                    verticalalignment='center', transform=heatmapax.transAxes
                 )
 
                 cax.text(

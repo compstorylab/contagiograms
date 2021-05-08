@@ -7,6 +7,11 @@ from operator import attrgetter
 from pathlib import Path
 
 
+class NegateAction(argparse.Action):
+    def __call__(self, parser, ns, values, option):
+        setattr(ns, self.dest, option[2:4] != 'no')
+
+
 class SortedMenu(ArgumentDefaultsHelpFormatter):
     def add_arguments(self, actions):
         actions = sorted(actions, key=attrgetter("option_strings"))
@@ -61,12 +66,6 @@ def parse_args(args):
     )
 
     parser.add_argument(
-        "--flipbook",
-        help="a flag to combine contagiograms PDFs into a single flipbook",
-        action="store_true",
-    )
-
-    parser.add_argument(
         "--t1",
         help="time scale to investigate relative social amplification [eg, M, 2M, 6M, Y]",
         default="1M",
@@ -85,6 +84,22 @@ def parse_args(args):
         help="starting date for the query",
         default=datetime(2010, 1, 1),
         type=valid_date,
+    )
+
+    parser.add_argument(
+        "--day-of-the-week",
+        "--no-day-of-the-week",
+        dest='day_of_the_week',
+        action=NegateAction,
+        default=True,
+        nargs=0,
+        help="a toggle to display r_rel wrt day of the week",
+    )
+
+    parser.add_argument(
+        "--flipbook",
+        help="a flag to combine contagiograms PDFs into a single flipbook",
+        action="store_true",
     )
 
     return parser.parse_args(args)

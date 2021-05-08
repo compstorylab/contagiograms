@@ -13,13 +13,14 @@ we convey the degree to which an n-gram τ is retweeted
 both overall and relative to the background level of retweeting for a given language ℓ. 
 We show both rates as retweet rates change strongly over time and variably so across languages.
 
-<img src="resources/ex2.png" alt="contagiograms" style="zoom:50%;" />
+![ex2](resources/ex2.png)
+
 
 Each contagiogram has three panels. 
 The main panel at the bottom shows the rank time series for a given n-gram. 
 For contagiograms running over a decade, 
 we show rank time series in this main panel with month-scale smoothing (black line) of the daily values, 
-and add a background shading in gray showing the highest and lowest rank of each week. 
+and add a background shading in gray showing the daily rank. 
 The smoothing scale for the main time series is a tunable parameter **t<sub>2</sub>**
 that can be configured to several time resolutions 
 (e.g., daily, weekly, and monthly).
@@ -37,9 +38,8 @@ that can be further configured to either monthly or weekly.
 First, the top panel displays the raw R<sub>τ,t,ℓ</sub> balance, 
 the monthly relative volumes of each n-gram in retweets (RT, orange) and organic tweets (OT, blue):
 
-<div align="center">
-    <img src="resources/eq1.svg" alt="Eq1" style="zoom:150%;" />
-</div>
+
+![eq1](resources/eq1.svg)
 
 
 When the balance of appearances in retweets outweighs those in organic tweets, R<sub>τ,t,ℓ</sub> > 0.5, 
@@ -51,10 +51,7 @@ R<sup>rel</sup><sub>τ,t,ℓ</sub>, over time.
 Building on from the R<sub>τ,t,ℓ</sub> balance, 
 we define R<sup>rel</sup><sub>τ,t,ℓ</sub> as:
 
-<div align="center">
-        <img src="resources/eq2.svg" alt="Eq2" style="zoom:150%;" />
-</div>
-
+![ex2](resources/eq2.svg)
 
 where the denominator gives the overall fraction of n-grams that are found in retweets on day t for language ℓ. 
 
@@ -75,14 +72,13 @@ R<sup>rel</sup><sub>τ,t,ℓ</sub> > 1,
 while gray encodes the opposite, 
 R<sup>rel</sup><sub>τ,t,ℓ</sub> < 1.
 
-
-<img src="resources/configs.png" alt="configs" style="zoom:50%;" />
+![configs](resources/configs.png)
 
 
 We show three examples with various smoothing configurations in the figure provided above. 
 
 
-
+ 
 ## Installation
 
 You can install the latest verion by cloning the repo and running [setup.py](setup.py) script in your terminal
@@ -117,12 +113,13 @@ Optional arguments:
                         path to an input JSON file (default: None)
   -o OUTPUT, --output OUTPUT
                         path to save figure (default: ~/contagiograms)
-
-  --flipbook            a flag to combine contagiograms PDFs into a single flipbook (default: False)
   --start_date START_DATE
                         starting date for the query (default: 2010-01-01)
   --t1 T1               time scale to investigate relative social amplification [eg, 1W, 1M, 2M, 6M, 1Y] (default: 1M)
   --t2 T2               window size for smoothing the main timeseries [days] (default: 30)
+  --day-of-the-week, --no-day-of-the-week
+                        a toggle to display r_rel wrt day of the week (default: True)
+  --flipbook            a flag to combine contagiograms PDFs into a single flipbook (default: False)
 ```
 
 >
@@ -130,7 +127,7 @@ Optional arguments:
 >
 
 
-To pass in your own ngrams you need a JSON file strucured with any of the configurations noted above (see [test.json](tests/test.json))
+To pass in your own ngrams you need a JSON file structured with any of the configurations noted above (see [test.json](tests/test.json))
 
 ```json
 {
@@ -195,6 +192,9 @@ contagiograms.plot(
     'tests/test.json', 
     savepath='tests/',
     start_date=datetime(2010, 1, 1),
+    t1='1M',
+    t2=30,
+    day_of_the_week=True
 )
 
 # combine PDFs into a single flipbook
